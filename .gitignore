@@ -1,60 +1,19 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# debug information files
-*.dwo
-
-# Qt Creator user-specific
+# Qt Creator user-specific files
 *.pro.user
 *.qmake.stash
 
 # Build directories
 build*/
-build-*/
 cmake-build-*/
-debug/
-release/
 
-# Compiled binary files
+# Compiled files
 *.o
 *.obj
-*.exe
 *.dll
 *.so
 *.dylib
+*.exe
+
+# Debug files
+*.pdb
+*.dwo
