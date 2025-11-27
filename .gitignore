@@ -39,3 +39,22 @@
 
 # debug information files
 *.dwo
+
+# Qt Creator user-specific
+*.pro.user
+*.qmake.stash
+
+# Build directories
+build*/
+build-*/
+cmake-build-*/
+debug/
+release/
+
+# Compiled binary files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
