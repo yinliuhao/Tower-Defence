@@ -15,7 +15,7 @@ Map::Map(): tileSize(TILESIZE), width(WIDTH - BTNWIDTH), height(HEIGHT)
 
 void Map::initpic()
 {
-    background.load(QString(":/picture/map/map.png"));
+    background.load(QString(":/picture/map/map0.png"));
 }
 
 QRectF Map::boundingRect() const

@@ -25,10 +25,10 @@
         <file>UI/5.png</file>
         <file>UI/uiFrame.png</file>
         <file>UI/slash.png</file>
-        <file>map/map.png</file>
         <file>player/walking/1.png</file>
         <file>player/walking/2.png</file>
         <file>player/walking/3.png</file>
         <file>player/walking/4.png</file>
+        <file>map/map0.png</file>
     </qresource>
 </RCC>
