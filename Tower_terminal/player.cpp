@@ -9,11 +9,15 @@ Player::Player()
     setZValue(PLAYERZVALUE);
     setPos(MAPWIDTH / 2.0, MAPHEIGHT / 2.0);
 
+    //处理人物行走速度
     m_timer.setInterval(SPEEDDELTA);
-    connect(&m_timer, &QTimer::timeout, this, &Player::updatePosition);
+    connect(&m_timer, &QTimer::timeout, this, [&](){
+        updatePosition(m_speed);
+    });
     m_timer.start();
 
-    walkTimer.setInterval(WAKINGDELTA);
+    //处理人物行走图片帧变化
+    walkTimer.setInterval(WAKEDELTA);
     connect(&walkTimer, &QTimer::timeout, this, [this](){
         if(m_up || m_down || m_left || m_right)
         {
@@ -35,14 +39,40 @@ Player::Player()
         }
     });
     walkTimer.start();
+
+
+    //处理人物翻滚速度及图片帧变化
+    rollTimer.setInterval(ROLLDELTA);
+    connect(this, &Player::rolling, this, [&](){
+        if(!m_up && !m_down && !m_left && !m_right) return;
+        walkTimer.stop();
+        m_timer.stop();
+        rollTimer.start();
+    });
+
+    connect(&rollTimer, &QTimer::timeout, this, [&](){
+        ++rollingCount;
+        update();
+        updatePosition(ROLLSPEED);
+        if(rollingCount >= 4 * ROLLTIMES)
+        {
+            rollingCount = 0;
+            walkTimer.start();
+            m_timer.start();
+            rollTimer.stop();
+        }
+    });
+
 }
 
+//改变人物实时前进方向
 void Player::setMoveUp(bool on)    { m_up = on; }
 void Player::setMoveDown(bool on)  { m_down = on; }
 void Player::setMoveLeft(bool on)  { m_left = on; }
 void Player::setMoveRight(bool on) { m_right = on; }
 
-void Player::updatePosition()
+//更新位置函数
+void Player::updatePosition(float speed)
 {
     QPointF vel(0, 0);
     if (m_up)    vel.ry() -= 1;
@@ -51,16 +81,16 @@ void Player::updatePosition()
     if (m_right) vel.rx() += 1;
 
     // 归一化，防止对角线更快
-    if (!qFuzzyIsNull(vel.x()) || !qFuzzyIsNull(vel.y())) {
+    if (!qFuzzyIsNull(vel.x()) || !qFuzzyIsNull(vel.y()))
+    {
         qreal len = qSqrt(vel.x()*vel.x() + vel.y()*vel.y());
         vel /= len;
     }
 
     // 移动（每帧速度 = speed * dt）
     qreal dt = SPEEDDELTA / 1000.0;
-    setPos(pos() + vel * (m_speed * dt));
+    setPos(pos() + vel * (speed * dt));
 }
-
 
 QRectF Player::boundingRect() const
 {
@@ -69,8 +99,28 @@ QRectF Player::boundingRect() const
 
 void Player::paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if(isGoingLeft)    p->drawPixmap(0, 0, leftWalking[nowIndex]);
-    else               p->drawPixmap(0, 0, rightWalking[nowIndex]);
+    if(isGoingLeft)
+    {
+        if(rollingCount != 0)
+        {
+            p->drawPixmap(0, 0, leftRolling[rollingCount % 4]);
+        }
+        else
+        {
+            p->drawPixmap(0, 0, leftWalking[nowIndex]);
+        }
+    }
+    else
+    {
+        if(rollingCount != 0)
+        {
+            p->drawPixmap(0, 0, rightRolling[(rollingCount - 1) % 4]);
+        }
+        else
+        {
+            p->drawPixmap(0, 0, rightWalking[nowIndex]);
+        }
+    }
 }
 
 void Player::initpic()
@@ -79,5 +129,10 @@ void Player::initpic()
     {
         leftWalking[i].load(QString(":/picture/player/walking/%1.png").arg(i + 1));
         rightWalking[i] = leftWalking[i].transformed(QTransform().scale(-1, 1));
+    }
+    for(int i = 0; i < 4; i++)
+    {
+        leftRolling[i].load(QString(":/picture/player/rolling/%1.png").arg(i + 1));
+        rightRolling[i] = leftRolling[i].transformed(QTransform().scale(-1, 1));
     }
 }

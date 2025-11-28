@@ -2,8 +2,8 @@
 #define UTILS_H
 
 //游戏界面
-#define WIDTH (WIDTHNUM * TILESIZE + BTNWIDTH)
-#define HEIGHT (TILESIZE * HEIGHTNUM)
+#define WIDTH 1152
+#define HEIGHT 648
 
 //地图
 #define TILESIZE 32
@@ -50,8 +50,11 @@
 #define PLAYERWIDTH TILESIZE
 #define PLAYERHEIGHT TILESIZE
 #define PLAYERSPEED 150.0
+#define ROLLSPEED 500.0
 
 //计时器
 #define SPEEDDELTA 16   //单位：ms
-#define WAKINGDELTA 80
+#define WAKEDELTA 80
+#define ROLLDELTA 15
+#define ROLLTIMES 3  //每次按shift键人物翻滚效果圈数
 #endif // UTILS_H

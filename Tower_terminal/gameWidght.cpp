@@ -83,11 +83,14 @@ Game::~Game()
 void Game::keyPressEvent(QKeyEvent *ev)
 {
     if (!me) return;
+    if(me->isRolling()) return;
 
     if (ev->key() == Qt::Key_W) me->setMoveUp(true);
     if (ev->key() == Qt::Key_S) me->setMoveDown(true);
     if (ev->key() == Qt::Key_A) me->setMoveLeft(true);
     if (ev->key() == Qt::Key_D) me->setMoveRight(true);
+
+    if(ev->key() == Qt::Key_Shift) emit me->rolling();
 
     QWidget::keyPressEvent(ev);
 }
@@ -95,7 +98,7 @@ void Game::keyPressEvent(QKeyEvent *ev)
 void Game::keyReleaseEvent(QKeyEvent *ev)
 {
     if (!me) return;
-    if (ev->isAutoRepeat())  return;
+    if(me->isRolling()) return;
 
     if (ev->key() == Qt::Key_W) me->setMoveUp(false);
     if (ev->key() == Qt::Key_S) me->setMoveDown(false);
