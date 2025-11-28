@@ -42,6 +42,8 @@ private:
     PlayerUI *myUI;   //UI界面
     Player * me;
     QTimer * viewTimer;
+    bool uiVisible;
+    bool buttonVisible;
 };
 
 #endif // GAMEWIDGHT_H

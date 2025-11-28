@@ -46,21 +46,24 @@ Game::Game(QWidget *parent)
     tower.push_back(new TowerButton("mortar", this));
     towerNum++;
 
-    //显示炮塔按钮
+    //隐藏炮塔按钮
     for(int i = 0; i < towerNum; i++)
     {
         tower[i]->move(width - BTNWIDTH, height - (towerNum - i) * BTNHEIGHT);
-        tower[i]->raise();
-        tower[i]->show();
     }
+    for(int i = 0; i < towerNum; i++)
+    {
+        tower[i]->hide();
+    }
+    buttonVisible = false;
 
     //初始化UI界面
     myUI = new PlayerUI(this);
 
-    //显示UI界面
+    //隐藏UI界面
     myUI->move(width - myUI->getWidth(), 0);
-    myUI->raise();
-    myUI->show();
+    myUI->hide();
+    uiVisible = false;
 
     //初始化玩家
     me = new Player();
@@ -113,6 +116,38 @@ void Game::keyPressEvent(QKeyEvent *ev)
 
 void Game::keyReleaseEvent(QKeyEvent *ev)
 {
+    if(ev->key() == Qt::Key_Tab)
+    {
+        uiVisible = !uiVisible;
+        if(uiVisible)
+        {
+            myUI->show();
+            myUI->raise();
+        }
+        else myUI->hide();
+        return;  // 处理完就退出，避免影响后面逻辑
+    }
+
+    if(ev->key() == Qt::Key_Q)
+    {
+        buttonVisible = !buttonVisible;
+        if(buttonVisible)
+        {
+            for(int i = 0; i < towerNum; i++)
+            {
+                tower[i]->show();
+                tower[i]->raise();
+            }
+        }
+        else
+        {
+            for(int i = 0; i < towerNum; i++)
+            {
+                tower[i]->hide();
+            }
+        }
+    }
+
     if (!me) return;
     if(me->isRolling()) return;
 
