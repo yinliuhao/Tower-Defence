@@ -8,9 +8,25 @@ Player::Player()
     initpic();
     setZValue(PLAYERZVALUE);
     setPos(MAPWIDTH / 2.0, MAPHEIGHT / 2.0);
-    m_timer.setInterval(DELTATIME);
+
+    m_timer.setInterval(SPEEDDELTA);
     connect(&m_timer, &QTimer::timeout, this, &Player::updatePosition);
     m_timer.start();
+
+    walkTimer.setInterval(WAKINGDELTA);
+    connect(&walkTimer, &QTimer::timeout, this, [this](){
+        if(m_up || m_down || m_left || m_right)
+        {
+            nowIndex = (nowIndex + 1) % 4;
+            update();
+        }
+        else
+        {
+            nowIndex = 0;
+            update();
+        }
+    });
+    walkTimer.start();
 }
 
 void Player::setMoveUp(bool on)    { m_up = on; }
@@ -33,7 +49,7 @@ void Player::updatePosition()
     }
 
     // 移动（每帧速度 = speed * dt）
-    qreal dt = DELTATIME / 1000.0;
+    qreal dt = SPEEDDELTA / 1000.0;
     setPos(pos() + vel * (m_speed * dt));
 }
 
@@ -45,10 +61,13 @@ QRectF Player::boundingRect() const
 
 void Player::paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    p->drawPixmap(0, 0, walking);
+    p->drawPixmap(0, 0, walking[nowIndex]);
 }
 
 void Player::initpic()
 {
-    walking.load(QString(":/picture/player/walking/1.png"));
+    for(int i = 0; i < 4; i++)
+    {
+        walking[i].load(QString(":/picture/player/walking/%1.png").arg(i + 1));
+    }
 }

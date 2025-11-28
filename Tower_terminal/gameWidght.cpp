@@ -95,6 +95,7 @@ void Game::keyPressEvent(QKeyEvent *ev)
 void Game::keyReleaseEvent(QKeyEvent *ev)
 {
     if (!me) return;
+    if (ev->isAutoRepeat())  return;
 
     if (ev->key() == Qt::Key_W) me->setMoveUp(false);
     if (ev->key() == Qt::Key_S) me->setMoveDown(false);

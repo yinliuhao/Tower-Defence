@@ -52,6 +52,6 @@
 #define PLAYERSPEED 150.0
 
 //计时器
-#define DELTATIME 16   //单位：ms
-
+#define SPEEDDELTA 16   //单位：ms
+#define WAKINGDELTA 80
 #endif // UTILS_H

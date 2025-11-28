@@ -11,6 +11,7 @@
 class Player : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
+
 public:
     Player();
 
@@ -30,10 +31,13 @@ private slots:
 private:
     int width;
     int height;
-    QPixmap walking;
+    QPixmap walking[4];
     bool m_up = false, m_down = false, m_left = false, m_right = false;
     qreal m_speed = PLAYERSPEED;   //单位：像素/秒
     QTimer m_timer;
+    int nowIndex = 0;
+    QTimer walkTimer;
+    bool isWalking = false;
 };
 
 #endif // PLAYER_H
