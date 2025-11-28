@@ -7,14 +7,7 @@ Player::Player()
 {
     initpic();
     setZValue(PLAYERZVALUE);
-    setPos(MAPWIDTH / 2.0, MAPHEIGHT / 2.0);
-
-    //处理人物行走速度
-    m_timer.setInterval(SPEEDDELTA);
-    connect(&m_timer, &QTimer::timeout, this, [&](){
-        updatePosition(m_speed);
-    });
-    m_timer.start();
+    setPos(WIDTH / 2.0, HEIGHT / 2.0);
 
     //处理人物行走图片帧变化
     walkTimer.setInterval(WAKEDELTA);
@@ -40,13 +33,19 @@ Player::Player()
     });
     walkTimer.start();
 
+    //处理玩家移动速度
+    moveTimer.setInterval(SPEEDDELTA);
+    moveTimer.start();
+    connect(&moveTimer, &QTimer::timeout, this, [&](){
+            updatePosition(me_speed);
+    });
 
-    //处理人物翻滚速度及图片帧变化
+    //处理玩家翻滚速度及图片帧变化
     rollTimer.setInterval(ROLLDELTA);
     connect(this, &Player::rolling, this, [&](){
         if(!m_up && !m_down && !m_left && !m_right) return;
         walkTimer.stop();
-        m_timer.stop();
+        moveTimer.stop();
         rollTimer.start();
     });
 
@@ -58,11 +57,10 @@ Player::Player()
         {
             rollingCount = 0;
             walkTimer.start();
-            m_timer.start();
+            moveTimer.start();
             rollTimer.stop();
         }
     });
-
 }
 
 //改变人物实时前进方向

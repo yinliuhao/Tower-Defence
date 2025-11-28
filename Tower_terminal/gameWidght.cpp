@@ -19,7 +19,6 @@ Game::Game(QWidget *parent)
 
     // 1. 创建场景
     scene = new QGraphicsScene(this);
-    scene->setSceneRect(0, 0, width, height);  // 根据你的地图大小
 
     // 2. 创建视图
     view = new QGraphicsView(scene, this);
@@ -36,6 +35,7 @@ Game::Game(QWidget *parent)
     map.push_back(m);
     mapNum++;
     scene->addItem(map[0]);
+    scene->setSceneRect(0, 0, map[0]->getWidth(), map[0]->getHeight());  // 根据地图大小
 
     //初始化炮塔按钮
     towerNum = 0;
@@ -49,7 +49,7 @@ Game::Game(QWidget *parent)
     //显示炮塔按钮
     for(int i = 0; i < towerNum; i++)
     {
-        tower[i]->move(this->map[0]->getWidth(), this->map[0]->getHeight() - (towerNum - i) * BTNHEIGHT);
+        tower[i]->move(width - BTNWIDTH, height - (towerNum - i) * BTNHEIGHT);
         tower[i]->raise();
         tower[i]->show();
     }
@@ -58,7 +58,7 @@ Game::Game(QWidget *parent)
     myUI = new PlayerUI(this);
 
     //显示UI界面
-    myUI->move(this->map[0]->getWidth() - 5 * this->map[0]->gettileSize(), 0);
+    myUI->move(width - myUI->getWidth(), 0);
     myUI->raise();
     myUI->show();
 
@@ -67,6 +67,14 @@ Game::Game(QWidget *parent)
 
     //显示玩家
     scene->addItem(me);
+
+    //玩家设置为视角中心
+    viewTimer = new QTimer(this);
+    connect(viewTimer, &QTimer::timeout, this, [&](){
+        view->centerOn(me);
+    });
+    viewTimer->start(SPEEDDELTA);
+
 }
 
 
@@ -85,10 +93,18 @@ void Game::keyPressEvent(QKeyEvent *ev)
     if (!me) return;
     if(me->isRolling()) return;
 
-    if (ev->key() == Qt::Key_W) me->setMoveUp(true);
-    if (ev->key() == Qt::Key_S) me->setMoveDown(true);
-    if (ev->key() == Qt::Key_A) me->setMoveLeft(true);
-    if (ev->key() == Qt::Key_D) me->setMoveRight(true);
+    if (ev->key() == Qt::Key_W){
+        me->setMoveUp(true);
+    }
+    if (ev->key() == Qt::Key_S){
+        me->setMoveDown(true);
+    }
+    if (ev->key() == Qt::Key_A){
+        me->setMoveLeft(true);
+    }
+    if (ev->key() == Qt::Key_D){
+        me->setMoveRight(true);
+    }
 
     if(ev->key() == Qt::Key_Shift) emit me->rolling();
 
@@ -100,10 +116,17 @@ void Game::keyReleaseEvent(QKeyEvent *ev)
     if (!me) return;
     if(me->isRolling()) return;
 
-    if (ev->key() == Qt::Key_W) me->setMoveUp(false);
-    if (ev->key() == Qt::Key_S) me->setMoveDown(false);
-    if (ev->key() == Qt::Key_A) me->setMoveLeft(false);
-    if (ev->key() == Qt::Key_D) me->setMoveRight(false);
-
+    if (ev->key() == Qt::Key_W){
+        me->setMoveUp(false);
+    }
+    if (ev->key() == Qt::Key_S){
+        me->setMoveDown(false);
+    }
+    if (ev->key() == Qt::Key_A){
+        me->setMoveLeft(false);
+    }
+    if (ev->key() == Qt::Key_D){
+        me->setMoveRight(false);
+    }
     QWidget::keyReleaseEvent(ev);
 }

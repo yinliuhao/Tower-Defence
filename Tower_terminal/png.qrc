@@ -29,10 +29,10 @@
         <file>player/walking/2.png</file>
         <file>player/walking/3.png</file>
         <file>player/walking/4.png</file>
-        <file>map/map0.png</file>
         <file>player/rolling/1.png</file>
         <file>player/rolling/2.png</file>
         <file>player/rolling/3.png</file>
         <file>player/rolling/4.png</file>
+        <file>map/map.png</file>
     </qresource>
 </RCC>

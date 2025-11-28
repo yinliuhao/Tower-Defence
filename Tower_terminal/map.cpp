@@ -3,7 +3,7 @@
 #include<QPainter>
 #include"utils.h"
 
-Map::Map(): tileSize(TILESIZE), width(WIDTH - BTNWIDTH), height(HEIGHT)
+Map::Map(): tileSize(TILESIZE), width(MAPWIDTH), height(MAPHEIGHT)
 {
     initpic();
     setPos(0, 0);
@@ -15,7 +15,7 @@ Map::Map(): tileSize(TILESIZE), width(WIDTH - BTNWIDTH), height(HEIGHT)
 
 void Map::initpic()
 {
-    background.load(QString(":/picture/map/map0.png"));
+    background.load(QString(":/picture/map/map.png"));
 }
 
 QRectF Map::boundingRect() const

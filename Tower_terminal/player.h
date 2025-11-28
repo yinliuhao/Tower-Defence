@@ -34,14 +34,15 @@ private:
     QPixmap rightWalking[4];
     QPixmap leftRolling[4];
     QPixmap rightRolling[4];
-    bool m_up = false, m_down = false, m_left = false, m_right = false;
-    qreal m_speed = PLAYERSPEED;   //单位：像素/秒
-    QTimer m_timer;   //控制速度
-    int nowIndex = 0;
-    QTimer walkTimer;   //控制走路图片切换
     bool isGoingLeft = false;
+
+    QTimer moveTimer;
+    QTimer rollTimer;
+    bool m_up = false, m_down = false, m_left = false, m_right = false;
+    QTimer walkTimer;   //控制走路图片切换
+    int nowIndex = 0;
+    qreal me_speed = PLAYERSPEED;   //单位：像素/秒
     int rollingCount = 0;
-    QTimer rollTimer;    //控制滑行图片切换
 
 signals:
     void rolling();

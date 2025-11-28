@@ -10,6 +10,8 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
+#include <QTimer>
+#include <QTime>
 
 namespace Ui {
 class Game;
@@ -39,6 +41,7 @@ private:
     std::vector<TowerButton*> tower;   //炮塔按钮
     PlayerUI *myUI;   //UI界面
     Player * me;
+    QTimer * viewTimer;
 };
 
 #endif // GAMEWIDGHT_H

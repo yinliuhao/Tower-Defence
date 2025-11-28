@@ -3,6 +3,8 @@
 
 #include<qpixmap.h>
 #include<QGraphicsPixmapItem>
+#include <QTimer>
+#include <QTime>
 
 class Map : public QGraphicsPixmapItem
 {
@@ -25,7 +27,7 @@ private:
     int height;   //地图高度
     int widthNum;  //地图宽上的地块数
     int heightNum;  //地图高上的地块数
-    std::vector<std::vector<int>> tileData;  //存储真正的地图
+    std::vector<std::vector<int>> tileData;  //存储地图信息
 };
 
 #endif // MAP_H
