@@ -17,6 +17,14 @@ Player::Player()
     connect(&walkTimer, &QTimer::timeout, this, [this](){
         if(m_up || m_down || m_left || m_right)
         {
+            if(m_left)
+            {
+                isGoingLeft = true;
+            }
+            if(m_right)
+            {
+                isGoingLeft = false;
+            }
             nowIndex = (nowIndex + 1) % 4;
             update();
         }
@@ -61,13 +69,15 @@ QRectF Player::boundingRect() const
 
 void Player::paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    p->drawPixmap(0, 0, walking[nowIndex]);
+    if(isGoingLeft)    p->drawPixmap(0, 0, leftWalking[nowIndex]);
+    else               p->drawPixmap(0, 0, rightWalking[nowIndex]);
 }
 
 void Player::initpic()
 {
     for(int i = 0; i < 4; i++)
     {
-        walking[i].load(QString(":/picture/player/walking/%1.png").arg(i + 1));
+        leftWalking[i].load(QString(":/picture/player/walking/%1.png").arg(i + 1));
+        rightWalking[i] = leftWalking[i].transformed(QTransform().scale(-1, 1));
     }
 }
