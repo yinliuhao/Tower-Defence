@@ -19,10 +19,10 @@ SOURCES += \
     playerUI.cpp \
     tower.cpp \
     towerButton.cpp \
-    utils.cpp
+    utils.cpp \
+    monstermanager.cpp
 
 HEADERS += \
-    ../../../C:/Users/LEGION/Downloads/Tower_terminal(1)/structVector.h \
     bullet.h \
     gameWidght.h \
     map.h \
@@ -33,7 +33,8 @@ HEADERS += \
     structVector.h \
     tower.h \
     towerButton.h \
-    utils.h
+    utils.h \
+    monstermanager.h
 
 FORMS += \
     gameWidght.ui \

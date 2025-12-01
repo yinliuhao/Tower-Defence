@@ -34,5 +34,9 @@
         <file>player/rolling/3.png</file>
         <file>player/rolling/4.png</file>
         <file>map/map.png</file>
+        <file>monster1/walk1.png</file>
+        <file>monster1/walk2.png</file>
+        <file>monster1/walk3.png</file>
+        <file>monster1/walk4.png</file>
     </qresource>
 </RCC>
