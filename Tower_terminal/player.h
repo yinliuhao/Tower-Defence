@@ -1,19 +1,21 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include<QGraphicsPixmapItem>
-#include<qpixmap.h>
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
 #include "utils.h"
+
+class Map;  // 前向声明
 
 class Player : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
 public:
-    Player();
+    Player(Map* map = nullptr);  // 加上地图指针
 
     void setMoveUp(bool on);
     void setMoveDown(bool on);
@@ -21,6 +23,7 @@ public:
     void setMoveRight(bool on);
     void updatePosition(float speed);
     bool isRolling() { return rollingCount; }
+    void setMap(Map* map);  // 设置地图指针
 
 protected:
     QRectF boundingRect() const override;
@@ -43,6 +46,8 @@ private:
     int nowIndex = 0;
     qreal me_speed = PLAYERSPEED;   //单位：像素/秒
     int rollingCount = 0;
+
+    Map* currentMap;  // 地图指针
 
 signals:
     void rolling();

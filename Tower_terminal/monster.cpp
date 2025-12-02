@@ -1,5 +1,3 @@
-#include <iostream>
-#include <algorithm>
 #include "monster.h"
 #include "bullet.h"
 #include "map.h"
@@ -10,35 +8,44 @@
 
 using namespace std;
 
-
-//怪物基类构造函数,初始化怪物所有属性并设置初始状态
-Monster::Monster(vector<Vector2> path,
+// 怪物基类构造函数
+Monster::Monster(Map* map,
                  MonsterType type,
                  float monsterHealth,
                  float monsterSpeed,
                  int monsterGold,
                  QGraphicsItem* parent)
-    : QGraphicsPixmapItem(parent),     // 初始化QGraphicsPixmapItem
-    type(type),                      // 设置怪物类型
+    : QGraphicsPixmapItem(parent),// 初始化QGraphicsPixmapItem
+    map(map),    // 设置地图指针
+    type(type),   // 设置怪物类型
     monsterHealth(monsterHealth),    // 设置初始生命值
     monsterSpeed(monsterSpeed),      // 设置移动速度
     monsterGold(monsterGold),        // 设置金币奖励
-    path(path),                      // 设置移动路径
-    currentTargetIndex(1),           // 从第1个路径点开始移动（第0个是起始点）
+    currentTargetIndex(0),           // 从第0个路径点开始
     reachedEnd(false),               // 初始未到达终点
     currentFrameIndex(0),            // 动画帧索引从0开始
     animationTimer(nullptr),         // 计时器指针初始化为空
     moveTimer(nullptr)               // 移动计时器指针初始化为空
 {
+    // 从地图获取路径
+    if (map) {
+        path = map->getMonsterPath();
+    }
+
     // 设置怪物的初始位置为路径的第一个点
     if(!path.empty()) {
         monsterPosition = path[0];
         setPos(monsterPosition.x, monsterPosition.y);  // 设置图形项位置
+    } else {
+        // 如果没有路径，放在默认位置
+        monsterPosition = Vector2(0, 0);
+        setPos(0, 0);
     }
 
     // 设置怪物的变换原点为中心点，便于旋转和翻转
     setTransformOriginPoint(16, 16);  // 32x32尺寸的中心点
 }
+
 void Monster::initializeMonster()
 {
     // 加载动画帧资源
@@ -53,7 +60,7 @@ void Monster::initializeMonster()
     initializeTimers();
 }
 
-//怪物析构函数 ,负责清理资源，停止所有计时器
+// 怪物析构函数
 Monster::~Monster()
 {
     stopMove();      // 确保停止所有移动和动画
@@ -61,7 +68,7 @@ Monster::~Monster()
     delete moveTimer;       // 释放移动计时器内存
 }
 
-// 初始化计时器系统,创建动画计时器和移动计时器，并连接对应的槽函数
+// 初始化计时器系统
 void Monster::initializeTimers()
 {
     // 创建动画计时器，每150毫秒触发一次动画更新
@@ -73,7 +80,7 @@ void Monster::initializeTimers()
     connect(moveTimer, &QTimer::timeout, this, &Monster::moveToNextPosition);
 }
 
-// 开始怪物移动,启动动画计时器和移动计时器，使怪物开始沿路径移动
+// 开始怪物移动
 void Monster::startMove()
 {
     // 安全检查：如果已到达终点、已死亡或路径点不足，则不启动移动
@@ -87,8 +94,7 @@ void Monster::startMove()
     moveTimer->start(80);
 }
 
-
-//停止所有计时器，冻结怪物状态
+// 停止所有计时器，冻结怪物状态
 void Monster::stopMove()
 {
     // 安全停止动画计时器
@@ -101,9 +107,7 @@ void Monster::stopMove()
     }
 }
 
-
-//怪物受到伤害处理
-//damage 受到的伤害值 减少生命值，检查是否死亡，触发相应信号
+// 怪物受到伤害处理（之后来联系子弹）
 void Monster::takeDamage(float damage)
 {
     monsterHealth -= damage;  // 扣除伤害值
@@ -121,8 +125,7 @@ void Monster::takeDamage(float damage)
     }
 }
 
-//更新动画帧
-// 循环播放动画帧，实现行走动画效果
+// 更新动画帧
 void Monster::updateAnimationFrame()
 {
     // 安全检查：确保有动画帧可用
@@ -136,7 +139,6 @@ void Monster::updateAnimationFrame()
 }
 
 // 移动到下一个路径点
-//计算移动方向和距离，更新怪物位置，处理路径点切换
 void Monster::moveToNextPosition()
 {
     // 终止条件检查：已到达终点、已死亡或超出路径范围
@@ -164,7 +166,7 @@ void Monster::moveToNextPosition()
     double distance = currentPos.distanceTo(targetPos);
 
     // 计算本次移动的距离（基于速度和帧时间）
-    double moveDistance = monsterSpeed * SPEEDDELTA;
+    double moveDistance = monsterSpeed * (80.0 / 1000.0);  // 80ms = 0.08秒
 
     // 如果移动距离大于等于到目标点的距离，说明可以到达目标点
     if(moveDistance >= distance) {
@@ -213,25 +215,22 @@ void Monster::moveToNextPosition()
 }
 
 //-------Monster1类实现-------
-//怪物1构造函数
-//设置怪物1的特定属性：生命值100，速度60，金币奖励10
-
-Monster1::Monster1(vector<Vector2> path, QGraphicsItem* parent)
-    : Monster(path, MonsterType::MONSTER1, 100.0f, 60.0f, 10, parent) {
+// 怪物1构造函数
+Monster1::Monster1(Map* map, QGraphicsItem* parent)
+    : Monster(map, MonsterType::MONSTER1, 100.0f, 60.0f, 10, parent) {
     initializeMonster();
 }
 
 // 加载怪物1的动画帧
-//从资源文件加载4张行走动画图片，并缩放为32x32尺寸
 void Monster1::loadAnimationFrames() {
     animationFrames.clear();
 
-    // 定义动画帧文件路径
+    // 定义动画帧文件路径（还没添加资源文件，暂时用玩家的图片测试）
     QStringList frameFiles;
-    frameFiles << ":/monster/monster1/walk1.png"
-               << ":/monster/monster1/walk2.png"
-               << ":/monster/monster1/walk3.png"
-               << ":/monster/monster1/walk4.png";
+    frameFiles << ":/picture/player/walking/1.png"//":/monster/monster1/walk1.png"（我记得是单一的图片，可能还需要处理）
+               << ":/picture/player/walking/2.png"//":/monster/monster1/walk2.png"
+               << ":/picture/player/walking/3.png"//":/monster/monster1/walk3.png"
+               << ":/picture/player/walking/4.png";//":/monster/monster1/walk4.png";
 
     // 加载并处理每一帧图片
     for(const QString& filePath : frameFiles) {

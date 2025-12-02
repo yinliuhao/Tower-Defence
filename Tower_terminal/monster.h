@@ -6,6 +6,9 @@
 #include <QObject>
 #include "structVector.h"
 
+// 前向声明
+class Map;
+
 enum class MonsterType {
     MONSTER1,  ///< 怪物类型1
     MONSTER2,  ///< 怪物类型2
@@ -13,55 +16,57 @@ enum class MonsterType {
     MONSTER4   ///< 怪物类型4
 };
 
-// 前向声明
-class Map;
-class Bullet;
-
-//怪物基类
-class Monster : public QObject, public QGraphicsPixmapItem {
+//怪物基类（纯虚函数，要有实例）
+class Monster : public QObject, public QGraphicsPixmapItem {//public QObject, public QGraphicsPixmapItem用于显示
     Q_OBJECT
 
 public:
-
-    Monster(std::vector<Vector2> path,//怪物移动路径点集合
-            MonsterType type,//怪物类型
-            float monsterHealth,//怪物初始生命值
-            float monsterSpeed,//怪物移动速度
-            int monsterGold,//怪物被击败时奖励的金币
-            QGraphicsItem* parent = nullptr);//父对象指针
+    // 修改构造函数，不需要传入路径，但需要传入Map指针
+    Monster(Map* map,               // 地图指针，规定不同地图有不同数据，用指针传入
+            MonsterType type,       // 怪物类型
+            float monsterHealth,    // 怪物初始生命值
+            float monsterSpeed,     // 怪物移动速度
+            int monsterGold,        // 怪物被击败时奖励的金币
+            QGraphicsItem* parent = nullptr);
 
     virtual ~Monster();
 
-    void initializeMonster();//初始化函数
+    void initializeMonster();       // 初始化函数
 
     // 基础功能接口
-    void startMove();       // 开始怪物移动和动画
-    void stopMove();        ///停止怪物移动和动画
+    void startMove();               // 开始怪物移动和动画
+    void stopMove();                // 停止怪物移动和动画
+
     bool isDead() const { return monsterHealth <= 0; }  // 判断怪物是否死亡
-    void takeDamage(float damage);  //怪物受到伤害
+    void takeDamage(float damage);  // 怪物受到伤害
+
+    //获取器
     Vector2 getPosition() const { return monsterPosition; }  // 获取当前位置
-    int getGold() const { return monsterGold; }  //获取金币奖励
+    int getGold() const { return monsterGold; }  // 获取金币奖励
     float getHealth() const { return monsterHealth; }  // 获取当前生命值
 
-    //获取怪物标准尺寸,返回32x32的固定尺寸
-    static QSize getMonsterSize() { return QSize(32, 32); }
+    // 获取怪物标准尺寸
+    static QSize getMonsterSize() { return QSize(32, 32); }//一个格子的大小
 
-signals:
-    //信号：怪物到达终点,当怪物成功沿着路径移动到终点时发射
+signals:  //Qt的内容
+    // 信号：怪物到达终点
     void reachedDestination();
 
-    //信号：怪物死亡   goldReward 死亡时奖励的金币数,当怪物生命值归零时发射
+    // 信号：怪物死亡
     void died(int goldReward);
 
-public slots:
+public slots:  //Qt的内容
     void updateAnimationFrame();    // 更新动画帧
     void moveToNextPosition();      // 移动到下一个路径点
 
 protected:
-    //纯虚函数：加载动画帧, 由具体怪物子类实现，加载对应的动画图片资源
+    // 纯虚函数：加载动画帧
     virtual void loadAnimationFrames() = 0;
 
     void initializeTimers();        // 初始化动画和移动计时器
+
+    // 地图指针
+    Map* map;                       // 指向地图的指针
 
     // 怪物基础属性
     MonsterType type;               // 怪物类型标识
@@ -71,7 +76,7 @@ protected:
 
     // 移动路径相关
     Vector2 monsterPosition;        // 当前精确位置（浮点数坐标）
-    std::vector<Vector2> path;      // 移动路径点序列
+    std::vector<Vector2> path;      // 移动路径点序列（从Map获取）
     int currentTargetIndex;         // 当前目标路径点索引
     bool reachedEnd;                // 是否已到达路径终点
 
@@ -87,10 +92,8 @@ private:
 // 第一种怪物类型的具体实现
 class Monster1 : public Monster {
 public:
-    //构造函数
-    // path 移动路径
-    // parent 父对象指针
-    Monster1(std::vector<Vector2> path, QGraphicsItem* parent = nullptr);
+    // 构造函数
+    Monster1(Map* map, QGraphicsItem* parent = nullptr);
 
 protected:
     // 实现基类的纯虚函数，加载怪物1的动画资源

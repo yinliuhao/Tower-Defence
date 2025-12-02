@@ -20,7 +20,6 @@ SOURCES += \
     tower.cpp \
     towerButton.cpp \
     utils.cpp \
-    monstermanager.cpp
 
 HEADERS += \
     bullet.h \
@@ -34,7 +33,6 @@ HEADERS += \
     tower.h \
     towerButton.h \
     utils.h \
-    monstermanager.h
 
 FORMS += \
     gameWidght.ui \
