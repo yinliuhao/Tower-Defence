@@ -80,6 +80,7 @@ protected:
     QVector<QPixmap> animationFrames;  // 动画帧图片集合
     int currentFrameIndex;             // 当前动画帧索引
 
+
 private:
     QTimer* animationTimer;    // 动画更新计时器
     QTimer* moveTimer;         // 位置移动计时器

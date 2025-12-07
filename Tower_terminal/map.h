@@ -72,6 +72,10 @@ public:
     // 绘制相关（可选，用于调试）
     void setShowGrid(bool show);
 
+    std::vector<QPointF> monsterPath;  // 生成的怪物路径
+    std::vector<std::vector<TileState>> tileState;
+    std::vector<std::vector<TileLayer>> tileLayer;
+
 protected:
     void initpic();
     QRectF boundingRect() const override;
@@ -85,13 +89,10 @@ private:
     int height;     // 地图高度（像素）
     int widthNum;   // 地图宽上的地块数
     int heightNum;  // 地图高上的地块数
-    std::vector<std::vector<TileState>> tileState;
-    std::vector<std::vector<TileLayer>> tileLayer;
 
     // 路径相关
     QPoint startPoint;  // 怪物起点（格子坐标）
     QPoint endPoint;    // 怪物终点（格子坐标）
-    std::vector<QPointF> monsterPath;  // 生成的怪物路径
 
     // 绘制选项
     bool showGrid;

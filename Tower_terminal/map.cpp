@@ -66,9 +66,9 @@ void Map::initializeTileData()
     ifs2.close();
 
     monsterPath.resize(19);
-    monsterPath = {QPointF(6, 4), QPointF(6, 14), QPointF(21, 14), QPointF(21, 9), QPointF(32, 9), QPointF(32, 20),
-                   QPointF(22, 20), QPointF(22, 27), QPointF(8, 27), QPointF(8, 23), QPointF(31, 23), QPointF(31, 31),
-                   QPointF(40, 31), QPointF(40, 23), QPointF(46, 23), QPointF(46, 20), QPointF(46, 17), QPointF(47, 17), QPointF(47, 7)};
+    monsterPath = {QPointF(4, 6), QPointF(14, 6), QPointF(14, 21), QPointF(9, 21), QPointF(9, 32), QPointF(20, 32),
+                   QPointF(20, 22), QPointF(27, 22), QPointF(27, 8), QPointF(23, 8), QPointF(23, 31), QPointF(31, 31),
+                   QPointF(31, 40), QPointF(23, 43), QPointF(23, 46), QPointF(20, 46), QPointF(17, 46), QPointF(17, 47), QPointF(7, 47)};
 }
 
 //注意！！！像素的原点为左上点，x轴为从左到右，y轴为从上到下
