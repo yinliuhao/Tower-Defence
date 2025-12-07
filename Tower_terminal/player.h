@@ -1,12 +1,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include<QGraphicsPixmapItem>
-#include<qpixmap.h>
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
 #include <QTimer>
 #include <QTime>
 #include <QDebug>
 #include "utils.h"
+
 
 class Player : public QObject, public QGraphicsPixmapItem
 {
@@ -19,7 +20,7 @@ public:
     void setMoveDown(bool on);
     void setMoveLeft(bool on);
     void setMoveRight(bool on);
-    void updatePosition(float speed);
+    void updatePosition(float speed, float delta);
     bool isRolling() { return rollingCount; }
 
 protected:

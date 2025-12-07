@@ -11,29 +11,28 @@ CONFIG += c++17
 SOURCES += \
     bullet.cpp \
     gameWidght.cpp \
+    global.cpp \
     main.cpp \
     map.cpp \
     menuWidget.cpp \
     monster.cpp \
     player.cpp \
     playerUI.cpp \
-    tower.cpp \
     towerButton.cpp \
-    utils.cpp
+    utils.cpp \
 
 HEADERS += \
-    ../../../C:/Users/LEGION/Downloads/Tower_terminal(1)/structVector.h \
     bullet.h \
     gameWidght.h \
+    global.h \
     map.h \
     menuWidget.h \
     monster.h \
     player.h \
     playerUI.h \
     structVector.h \
-    tower.h \
     towerButton.h \
-    utils.h
+    utils.h \
 
 FORMS += \
     gameWidght.ui \

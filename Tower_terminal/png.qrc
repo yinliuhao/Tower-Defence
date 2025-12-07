@@ -1,15 +1,6 @@
 <RCC>
     <qresource prefix="/picture">
         <file>menuBackground/menuBackground.png</file>
-        <file>Tower/archer.png</file>
-        <file>Tower/cannon.png</file>
-        <file>Tower/mortar.png</file>
-        <file>Tower/lack_archer.png</file>
-        <file>Tower/lack_cannon.png</file>
-        <file>Tower/lack_mortar.png</file>
-        <file>Tower/select_archer.png</file>
-        <file>Tower/select_cannon.png</file>
-        <file>Tower/select_mortar.png</file>
         <file>UI/health.png</file>
         <file>UI/money.png</file>
         <file>UI/wave.png</file>
@@ -34,5 +25,19 @@
         <file>player/rolling/3.png</file>
         <file>player/rolling/4.png</file>
         <file>map/map.png</file>
+        <file>monster1/walk1.png</file>
+        <file>monster1/walk2.png</file>
+        <file>monster1/walk3.png</file>
+        <file>monster1/walk4.png</file>
+        <file>towerButton/archer.png</file>
+        <file>towerButton/cannon.png</file>
+        <file>towerButton/lack_archer.png</file>
+        <file>towerButton/lack_cannon.png</file>
+        <file>towerButton/lack_mortar.png</file>
+        <file>towerButton/mortar.png</file>
+        <file>towerButton/select_archer.png</file>
+        <file>towerButton/select_cannon.png</file>
+        <file>towerButton/select_mortar.png</file>
+        <file>tower/archer.png</file>
     </qresource>
 </RCC>

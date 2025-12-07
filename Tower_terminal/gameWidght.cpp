@@ -1,10 +1,12 @@
 #include <QGraphicsView>
-#include <qstring.h>
+#include <QString>
 #include <QKeyEvent>
 #include "gameWidght.h"
 #include "ui_gameWidght.h"
 #include "towerButton.h"
+#include "global.h"
 #include "utils.h"
+#include <QDebug>
 
 Game::Game(QWidget *parent)
     : QWidget(parent),
@@ -30,14 +32,17 @@ Game::Game(QWidget *parent)
     // 3. 取消滚动区域边距（重要）
     view->setFrameStyle(QFrame::NoFrame);
 
-    //初始化地图
-    Map *m = new Map();
-    map.push_back(m);
-    mapNum++;
-    scene->addItem(map[0]);
-    scene->setSceneRect(0, 0, map[0]->getWidth(), map[0]->getHeight());  // 根据地图大小
+    // 初始化地图
+     gMap = new Map;
+    scene->addItem(gMap);
+    scene->setSceneRect(0, 0, gMap->getWidth(), gMap->getHeight());
 
-    //初始化炮塔按钮
+    // 可以开启网格显示（用于调试）
+    // 注释掉就不显示
+    gMap->setShowGrid(true);
+    //这里有bug，但是找不到
+
+    // 初始化炮塔按钮
     towerNum = 0;
     tower.push_back(new TowerButton("archer", this));
     towerNum++;
@@ -46,7 +51,7 @@ Game::Game(QWidget *parent)
     tower.push_back(new TowerButton("mortar", this));
     towerNum++;
 
-    //隐藏炮塔按钮
+    // 隐藏炮塔按钮
     for(int i = 0; i < towerNum; i++)
     {
         tower[i]->move(width - BTNWIDTH, height - (towerNum - i) * BTNHEIGHT);
@@ -57,38 +62,33 @@ Game::Game(QWidget *parent)
     }
     buttonVisible = false;
 
-    //初始化UI界面
+    // 初始化UI界面
     myUI = new PlayerUI(this);
 
-    //隐藏UI界面
+    // 隐藏UI界面
     myUI->move(width - myUI->getWidth(), 0);
     myUI->hide();
     uiVisible = false;
 
-    //初始化玩家
-    me = new Player();
+    // 初始化玩家
+    me = new Player();  // 将地图指针传递给Player
 
-    //显示玩家
+    // 显示玩家
     scene->addItem(me);
 
-    //玩家设置为视角中心
+    // 玩家设置为视角中心
     viewTimer = new QTimer(this);
     connect(viewTimer, &QTimer::timeout, this, [&](){
         view->centerOn(me);
     });
     viewTimer->start(SPEEDDELTA);
-
 }
-
 
 Game::~Game()
 {
+    delete gMap;
+    if(gMap != NULL)  gMap = NULL;
     delete ui;
-    for(int i = 0; i < mapNum; i++)
-    {
-        delete map[i];
-        map[i] = nullptr;
-    }
 }
 
 void Game::keyPressEvent(QKeyEvent *ev)

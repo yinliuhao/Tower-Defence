@@ -1,63 +1,76 @@
+// Tower.h
 #pragma once
-#include<vector>
+#include <QPixmap>
+#include <QString>
+#include <vector>
+#include "bulletManager.h"
+#include<QGraphicsPixmapItem>
+#include<QTimer>
+#include <QTransform>   // 用于图片旋转
+#include <QPointF>
 
-#include<structVector.h>
-
-using namespace std;
 enum towertype {
     TOWER1,
     TOWER2,
     TOWER3,
-    TOWER4,
+    TOWER_NONE,
 };
 
-class monster;
+class Monster;
 class Map;
-class bullet;
+class Bullet;
 
+class Tower : public QObject, public QGraphicsPixmapItem
+{
+    Q_OBJECT
 
-class tower {
 private:
-
-    // 塔基础属性（与initTowerAttr函数中的属性对应）
-    towertype type;            // 塔的种类
-    float towerhealth;         // 塔的血量
-    int towergold;             // 安置塔所需金币
+    towertype towerType;
+    int health;
+    int maxHealth;
+    int buildCost;
+    int damage;
+    double attackRange;
+    double attackSpeed;
+    bool isPlaced;
+    bool isActive;
     int level;
-    double towerdamage;        //tower创建子弹是利用该数据给子弹的伤害赋值
-    double attackRange;        // 塔的攻击范围（半径）
-    double attackSpeed;        // 塔的射速（攻击间隔，秒/次）
-    Vector2 towerposition;     // 塔在地图上的坐标
-    bool isPlaced;             // 塔是否已放置到地图
-
-    /*bullet towerbullet; */     //塔包含子弹，塔可以生成子弹
+    QPixmap towerPixmap;
+    // 新增：旋转相关变量
+    Vector2 towerPosition;
+    qreal currentRotation;  // 当前旋转角度（弧度/角度）
+    QPointF towerCenter;    // 塔的中心坐标（旋转锚点）
+    QTimer *attackTimer; // 攻击计时器
 
 public:
-    tower(){};
-    tower(towertype type,
-          float towerhealth,
-          int towergold,
-          int level,
-          double towerdamage,
-          double attackRange,
-          double attackSpeed,
-          Vector2 towerposition,
-          bool isPlaced/*,
-        bullet towerbullet*/);
+    // 新增：旋转核心函数
+    void rotateToTarget(const Monster* target);  // 朝向目标怪物旋转
+    void updateRotation(qreal angleDeg);         // 更新旋转角度并刷新图片
 
+    Tower();
+    ~Tower() override;
+    // 设置攻击间隔（单位：毫秒）
+    void setAttackInterval(int ms);
+    QRectF boundingRect() const override;
 
-    //升级塔
-    void upgrade(towertype type);
-    //  寻找攻击目标
-    void selectAttackTarget(vector<monster>amonster);//塔不拥有monster所有依赖或友元monster，这是怪物的友元函数，访问怪物
-    //设置塔种类
-    void setTowerType(towertype type);//应该会被put()调用
-    //放置塔
-    void put(Map& map, Vector2 towerposition);//map的友元函数，可以访问map,在map里写friend，在tower里实现
-    //绘制塔
-    void showtower(Vector2 towerposition);
-    //铲除塔
-    void remove(Map& map, int towergold);//map的友元函数，可以访问map,在map里写friend，在tower里实现
+signals:
+    void clearTower(int buildMoney);
 
-    void createBullet(bullet towerbullet);//创建子弹，调用子弹的函数
+private slots:
+    // 计时器触发的槽函数（用于执行攻击逻辑）
+    void onAttackTimerTimeout();
+    void setTowerType(towertype type);
+    void upgrade();
+    void put(int x, int y);
+    void remove();
+    const Monster* selectAttackTarget(const std::vector<Monster>& monsters) const;
+    void fire(BulletManager& bullet, const Monster* target) const;
+    void setPixmap(const QString& path);
+    int getLevel() const;
+    void takeDamage(int dmg);
+    bool isAlive() const;
+    int getBuildCost() const;
+    towertype getTowerType() const;
+    void paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*) override;
+    friend class Bullet;
 };

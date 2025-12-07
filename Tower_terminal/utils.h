@@ -53,7 +53,7 @@
 #define ROLLSPEED 500.0
 
 //计时器
-#define SPEEDDELTA 16   //单位：ms
+#define SPEEDDELTA 8   //单位：ms
 #define WAKEDELTA 80
 #define ROLLDELTA 15
 #define ROLLTIMES 3  //每次按shift键人物翻滚效果圈数

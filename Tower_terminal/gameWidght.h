@@ -2,7 +2,6 @@
 #define GAMEWIDGHT_H
 
 #include <QWidget>
-#include "map.h"
 #include "towerButton.h"
 #include "player.h"
 #include "playerUI.h"
@@ -27,19 +26,19 @@ public:
     void keyPressEvent(QKeyEvent *ev);
     void keyReleaseEvent(QKeyEvent *ev);
 
+private slots:
+
 private:
     Ui::Game *ui;
     QGraphicsView* view;
     QGraphicsScene* scene;
-    
+
     int width;
     int height;
 
-    int mapNum;
-    std::vector<Map*> map;  //地图
-    int towerNum;  //炮塔种类数
-    std::vector<TowerButton*> tower;   //炮塔按钮
-    PlayerUI *myUI;   //UI界面
+    int towerNum;  // 炮塔种类数
+    std::vector<TowerButton*> tower;   // 炮塔按钮
+    PlayerUI *myUI;   // UI界面
     Player * me;
     QTimer * viewTimer;
     bool uiVisible;
