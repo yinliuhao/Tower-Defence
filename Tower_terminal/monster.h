@@ -22,8 +22,7 @@ class Monster : public QObject, public QGraphicsPixmapItem {//public QObject, pu
 
 public:
     // 修改构造函数，不需要传入路径，但需要传入Map指针
-    Monster(Map* map,               // 地图指针，规定不同地图有不同数据，用指针传入
-            MonsterType type,       // 怪物类型
+    Monster(MonsterType type,       // 怪物类型
             float monsterHealth,    // 怪物初始生命值
             float monsterSpeed,     // 怪物移动速度
             int monsterGold,        // 怪物被击败时奖励的金币
@@ -61,12 +60,9 @@ public slots:  //Qt的内容
 
 protected:
     // 纯虚函数：加载动画帧
-    virtual void loadAnimationFrames() = 0;
+    void loadAnimationFrames();
 
     void initializeTimers();        // 初始化动画和移动计时器
-
-    // 地图指针
-    Map* map;                       // 指向地图的指针
 
     // 怪物基础属性
     MonsterType type;               // 怪物类型标识
@@ -87,15 +83,4 @@ protected:
 private:
     QTimer* animationTimer;    // 动画更新计时器
     QTimer* moveTimer;         // 位置移动计时器
-};
-
-// 第一种怪物类型的具体实现
-class Monster1 : public Monster {
-public:
-    // 构造函数
-    Monster1(Map* map, QGraphicsItem* parent = nullptr);
-
-protected:
-    // 实现基类的纯虚函数，加载怪物1的动画资源
-    void loadAnimationFrames() override;
 };

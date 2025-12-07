@@ -8,22 +8,20 @@
 #include <QDebug>
 #include "utils.h"
 
-class Map;  // 前向声明
 
 class Player : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
 public:
-    Player(Map* map = nullptr);  // 加上地图指针
+    Player();
 
     void setMoveUp(bool on);
     void setMoveDown(bool on);
     void setMoveLeft(bool on);
     void setMoveRight(bool on);
-    void updatePosition(float speed);
+    void updatePosition(float speed, float delta);
     bool isRolling() { return rollingCount; }
-    void setMap(Map* map);  // 设置地图指针
 
 protected:
     QRectF boundingRect() const override;
@@ -46,8 +44,6 @@ private:
     int nowIndex = 0;
     qreal me_speed = PLAYERSPEED;   //单位：像素/秒
     int rollingCount = 0;
-
-    Map* currentMap;  // 地图指针
 
 signals:
     void rolling();

@@ -3,21 +3,14 @@
 #include <QPainter>
 #include <QTransform>
 #include "utils.h"
-#include "map.h"  // 关键：包含Map类的完整定义
+#include "global.h"
 
-Player::Player(Map* map) : currentMap(map)
+Player::Player()
 {
     initpic();
     setZValue(PLAYERZVALUE);
 
-    // 设置初始位置
-    if (currentMap) {
-        // 如果有地图，放在地图中心（之后改为帐篷的位置）
-        setPos(currentMap->getWidth() / 2.0, currentMap->getHeight() / 2.0);
-    } else {
-        // 否则放在窗口中心
-        setPos(WIDTH / 2.0, HEIGHT / 2.0);
-    }
+    setPos(WIDTH / 2.0, HEIGHT / 2.0);
 
     //处理人物行走图片帧变化
     walkTimer.setInterval(WAKEDELTA);
@@ -47,7 +40,7 @@ Player::Player(Map* map) : currentMap(map)
     moveTimer.setInterval(SPEEDDELTA);
     moveTimer.start();
     connect(&moveTimer, &QTimer::timeout, this, [&](){
-        updatePosition(me_speed);
+        updatePosition(me_speed, SPEEDDELTA);
     });
 
     //处理玩家翻滚速度及图片帧变化
@@ -62,7 +55,7 @@ Player::Player(Map* map) : currentMap(map)
     connect(&rollTimer, &QTimer::timeout, this, [&](){
         ++rollingCount;
         update();
-        updatePosition(ROLLSPEED);
+        updatePosition(ROLLSPEED, ROLLDELTA);
         if(rollingCount >= 4 * ROLLTIMES)
         {
             rollingCount = 0;
@@ -80,7 +73,7 @@ void Player::setMoveLeft(bool on)  { m_left = on; }
 void Player::setMoveRight(bool on) { m_right = on; }
 
 //更新位置函数
-void Player::updatePosition(float speed)
+void Player::updatePosition(float speed, float delta)
 {
     QPointF vel(0, 0);
     if (m_up)    vel.ry() -= 1;
@@ -96,48 +89,17 @@ void Player::updatePosition(float speed)
     }
 
     // 移动
-    qreal dt = SPEEDDELTA / 1000.0;
+    qreal dt = delta / 1000.0;
+    QPointF center = QPointF(pos().x() + TILESIZE/ 2, pos().y() + TILESIZE / 2);
     QPointF newPos = pos() + vel * (speed * dt);
+    QPointF newCenter = QPointF(newPos.x() + TILESIZE/ 2, newPos.y() + TILESIZE / 2);
 
-    // 如果有地图，检查边界和地形
-    if (currentMap) {
-        // 获取当前格子和目标格子
-        QPoint currentGrid = currentMap->pixelToGrid(pos());
-        QPoint targetGrid = currentMap->pixelToGrid(newPos);
+    newCenter += vel * TILESIZE / 2;
 
-        // 如果目标格子与当前格子不同，检查是否可以移动
-        if (currentGrid != targetGrid) {
-            if (!currentMap->canMoveTo(currentGrid.x(), currentGrid.y(),
-                                       targetGrid.x(), targetGrid.y())) {
-                // 不能移动到目标格子，保持原位
-                return;
-            }
-        }
-
-        // 获取玩家边界
-        QRectF playerRect = boundingRect();
-
-        // 计算新位置下的玩家边界
-        QRectF newPlayerRect = QRectF(newPos, playerRect.size());
-
-        // 检查是否在地图边界内
-        if (newPlayerRect.left() < 0) newPos.setX(0);
-        if (newPlayerRect.top() < 0) newPos.setY(0);
-        if (newPlayerRect.right() > currentMap->getWidth())
-            newPos.setX(currentMap->getWidth() - playerRect.width());
-        if (newPlayerRect.bottom() > currentMap->getHeight())
-            newPos.setY(currentMap->getHeight() - playerRect.height());
-    }
-
+    QPointF grid = gMap->pixelToGrid(center);
+    QPointF newGrid = gMap->pixelToGrid(newCenter);
+    if ( gMap->canMoveTo(grid.x(), grid.y(), newGrid.x(), newGrid.y()) )
     setPos(newPos);
-}
-
-void Player::setMap(Map* map) {
-    currentMap = map;
-    if (map) {
-        // 更新位置到地图中心
-        setPos(map->getWidth() / 2.0, map->getHeight() / 2.0);
-    }
 }
 
 QRectF Player::boundingRect() const

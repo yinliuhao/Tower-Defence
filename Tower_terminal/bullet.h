@@ -1,46 +1,69 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include<structVector.h>
+#include <QObject>
+#include <QGraphicsItem>
+#include <QTimer>
+#include <QPixmap>
+#include "structVector.h"
 
-class monster;
-class tower;
+#define BULLET_SPEED 8.0f
+#define BULLET_TOLERANCE 5.0f
+#define UPDATE_INTERVAL_MS 16
+#define BULLET_FRAME_DELAY 100
 
-// 子弹类
-class bullet {
-    friend monster;
-private:
-    Vector2 bulletposition;      // 当前位置
-    Vector2 targetposition;      //由tower访问monster后初始化，接着子弹访问monster来改变
-    float bulletdamage;          // 伤害值
-    float bulletspeed;           // 移动速度
+class Bullet : public QObject, public QGraphicsItem
+{
+    Q_OBJECT
+    Q_INTERFACES(QGraphicsItem)
 
 public:
-    // 构造函数
-    bullet(){};
+    Bullet(const Vector2& startPos, const Vector2& targetPos,
+           float speed = BULLET_SPEED, QGraphicsItem* parent = nullptr);
+    ~Bullet();
 
-    bullet(Vector2 bulletposition,
-           Vector2 targetposition,
-           float bulletdamage,
-           float bulletspeed);
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget = nullptr) override;
+    QPainterPath shape() const override;
 
-    ~bullet(){}
+    void updatePosition();
+    bool isActive() const { return active_; }
+    bool hasHit() const { return hasHit_; }
+    const Vector2& getPosition() const { return position_; }
+    const Vector2& getTargetPosition() const { return targetPos_; }
+    float getRotation() const { return rotation_; }
 
-    // 更新子弹状态
-    void bulletfly(Vector2 bulletposition,Vector2 targetposition,Vector2 monsterposition,float bulletspeed);
+    void startEffect();
+    void setBulletPixmap(const QPixmap& pixmap);
+    void setBulletPixmap(const QString& imagePath);
 
-    void damagethemonster(float monsterhealth);//怪物的友元函数，是子弹的函数，子弹命中怪物时访问血量
+public slots:
+    void onUpdateTimer();
+    void onFrameUpdate();
 
-    void showbullet();
+private:
+    Vector2 position_;
+    Vector2 targetPos_;
+    float speed_;
+    bool active_;
+    bool hasHit_;
+    float tolerance_;
+    float rotation_;
 
+    QTimer* updateTimer_;
+    QTimer* frameTimer_;
+    QPixmap bulletPixmap_;
+    int currentFrame_;
+    int totalFrames_;
+    QSize pixmapSize_;
+
+    void loadDefaultPixmap();
+    bool isAtTarget() const;
+    void hitTarget();
+
+signals:
+    void hit(const Vector2& position);
 };
 
-
-// 特殊子弹类型：范围伤害子弹（继承bullet基类）
-//class AoeBullet : public bullet {
-//private:
-//public:
-//};
-
 #endif // BULLET_H
-

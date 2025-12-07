@@ -1,7 +1,4 @@
 #include "monster.h"
-#include "bullet.h"
-#include "map.h"
-#include "utils.h"
 #include <QString>
 #include <QGraphicsScene>
 #include <QPainter>
@@ -9,15 +6,12 @@
 using namespace std;
 
 // 怪物基类构造函数
-Monster::Monster(Map* map,
-                 MonsterType type,
+Monster::Monster(MonsterType type,
                  float monsterHealth,
                  float monsterSpeed,
                  int monsterGold,
-                 QGraphicsItem* parent)
-    : QGraphicsPixmapItem(parent),// 初始化QGraphicsPixmapItem
-    map(map),    // 设置地图指针
-    type(type),   // 设置怪物类型
+                 QGraphicsItem* )
+    :type(type),   // 设置怪物类型
     monsterHealth(monsterHealth),    // 设置初始生命值
     monsterSpeed(monsterSpeed),      // 设置移动速度
     monsterGold(monsterGold),        // 设置金币奖励
@@ -27,21 +21,6 @@ Monster::Monster(Map* map,
     animationTimer(nullptr),         // 计时器指针初始化为空
     moveTimer(nullptr)               // 移动计时器指针初始化为空
 {
-    // 从地图获取路径
-    if (map) {
-        path = map->getMonsterPath();
-    }
-
-    // 设置怪物的初始位置为路径的第一个点
-    if(!path.empty()) {
-        monsterPosition = path[0];
-        setPos(monsterPosition.x, monsterPosition.y);  // 设置图形项位置
-    } else {
-        // 如果没有路径，放在默认位置
-        monsterPosition = Vector2(0, 0);
-        setPos(0, 0);
-    }
-
     // 设置怪物的变换原点为中心点，便于旋转和翻转
     setTransformOriginPoint(16, 16);  // 32x32尺寸的中心点
 }
@@ -49,7 +28,7 @@ Monster::Monster(Map* map,
 void Monster::initializeMonster()
 {
     // 加载动画帧资源
-    loadAnimationFrames();
+    //loadAnimationFrames();
 
     // 设置初始显示的图片
     if(!animationFrames.isEmpty()) {
@@ -211,39 +190,5 @@ void Monster::moveToNextPosition()
     } else if (direction.x < -0.1) {
         // 向左移动：水平翻转
         setTransform(QTransform().scale(-1, 1));
-    }
-}
-
-//-------Monster1类实现-------
-// 怪物1构造函数
-Monster1::Monster1(Map* map, QGraphicsItem* parent)
-    : Monster(map, MonsterType::MONSTER1, 100.0f, 60.0f, 10, parent) {
-    initializeMonster();
-}
-
-// 加载怪物1的动画帧
-void Monster1::loadAnimationFrames() {
-    animationFrames.clear();
-
-    // 定义动画帧文件路径（还没添加资源文件，暂时用玩家的图片测试）
-    QStringList frameFiles;
-    frameFiles << ":/picture/player/walking/1.png"//":/monster/monster1/walk1.png"（我记得是单一的图片，可能还需要处理）
-               << ":/picture/player/walking/2.png"//":/monster/monster1/walk2.png"
-               << ":/picture/player/walking/3.png"//":/monster/monster1/walk3.png"
-               << ":/picture/player/walking/4.png";//":/monster/monster1/walk4.png";
-
-    // 加载并处理每一帧图片
-    for(const QString& filePath : frameFiles) {
-        QPixmap frame(filePath);
-        if(!frame.isNull()) {
-            // 将图片缩放为32x32尺寸，保持宽高比，使用平滑变换
-            frame = frame.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            animationFrames.append(frame);
-        }
-    }
-
-    // 设置初始显示的图片
-    if (!animationFrames.isEmpty()) {
-        setPixmap(animationFrames.first());
     }
 }
