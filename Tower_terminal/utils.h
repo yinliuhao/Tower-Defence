@@ -52,6 +52,21 @@
 #define PLAYERSPEED 150.0
 #define ROLLSPEED 500.0
 
+//怪物
+//monster1
+#define MONSTER1_HEALTH 100.0
+#define MONSTER1_SPEED 60.0
+#define MONSTER1_GOLD 10
+//monster2
+#define MONSTER2_HEALTH 200.0
+#define MONSTER2_SPEED 40.0
+#define MONSTER2_GOLD 20
+//monster3
+#define MONSTER3_HEALTH 400.0
+#define MONSTER3_SPEED 20.0
+#define MONSTER3_GOLD 40
+
+
 //计时器
 #define SPEEDDELTA 8   //单位：ms
 #define WAKEDELTA 80

@@ -60,7 +60,7 @@ public slots:  //Qt的内容
 
 protected:
     // 纯虚函数：加载动画帧
-    void loadAnimationFrames();
+    virtual void loadAnimationFrames()=0;
 
     void initializeTimers();        // 初始化动画和移动计时器
 
@@ -85,3 +85,29 @@ private:
     QTimer* animationTimer;    // 动画更新计时器
     QTimer* moveTimer;         // 位置移动计时器
 };
+
+class Monster1:public Monster{
+    Q_OBJECT
+public:
+    Monster1(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+    };
+
+class Monster2:public Monster{
+    Q_OBJECT
+public:
+    Monster2(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+};
+
+class Monster3:public Monster{
+    Q_OBJECT
+public:
+    Monster3(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+};
+
+

@@ -11,7 +11,8 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QTime>
-
+#include"monster.h"
+#include"monsterSpawner.h"
 namespace Ui {
 class Game;
 }
@@ -43,6 +44,10 @@ private:
     QTimer * viewTimer;
     bool uiVisible;
     bool buttonVisible;
+
+
+    MonsterSpawnerTower* monsterSpawner;//怪物生成器
+
 };
 
 #endif // GAMEWIDGHT_H

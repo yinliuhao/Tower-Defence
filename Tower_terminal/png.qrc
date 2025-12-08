@@ -25,10 +25,6 @@
         <file>player/rolling/3.png</file>
         <file>player/rolling/4.png</file>
         <file>map/map.png</file>
-        <file>monster1/walk1.png</file>
-        <file>monster1/walk2.png</file>
-        <file>monster1/walk3.png</file>
-        <file>monster1/walk4.png</file>
         <file>towerButton/archer.png</file>
         <file>towerButton/cannon.png</file>
         <file>towerButton/lack_archer.png</file>
@@ -39,5 +35,53 @@
         <file>towerButton/select_cannon.png</file>
         <file>towerButton/select_mortar.png</file>
         <file>tower/archer.png</file>
+        <file>monster2/(1).png</file>
+        <file>monster2/(2).png</file>
+        <file>monster2/(3).png</file>
+        <file>monster2/(4).png</file>
+        <file>monster2/(5).png</file>
+        <file>monster2/(6).png</file>
+        <file>monster2/(7).png</file>
+        <file>monster2/(8).png</file>
+        <file>monster2/(9).png</file>
+        <file>monster2/(10).png</file>
+        <file>monster2/(11).png</file>
+        <file>monster2/(12).png</file>
+        <file>monster2/(13).png</file>
+        <file>monster2/(14).png</file>
+        <file>monster2/(15).png</file>
+        <file>monster2/(16).png</file>
+        <file>monster3/(1).png</file>
+        <file>monster3/(2).png</file>
+        <file>monster3/(3).png</file>
+        <file>monster3/(4).png</file>
+        <file>monster3/(5).png</file>
+        <file>monster3/(6).png</file>
+        <file>monster3/(7).png</file>
+        <file>monster3/(8).png</file>
+        <file>monster3/(9).png</file>
+        <file>monster3/(10).png</file>
+        <file>monster3/(11).png</file>
+        <file>monster3/(12).png</file>
+        <file>monster3/(13).png</file>
+        <file>monster3/(14).png</file>
+        <file>monster3/(15).png</file>
+        <file>monster3/(16).png</file>
+        <file>monster1/(1).png</file>
+        <file>monster1/(2).png</file>
+        <file>monster1/(3).png</file>
+        <file>monster1/(4).png</file>
+        <file>monster1/(5).png</file>
+        <file>monster1/(6).png</file>
+        <file>monster1/(7).png</file>
+        <file>monster1/(8).png</file>
+        <file>monster1/(9).png</file>
+        <file>monster1/(10).png</file>
+        <file>monster1/(11).png</file>
+        <file>monster1/(12).png</file>
+        <file>monster1/(13).png</file>
+        <file>monster1/(14).png</file>
+        <file>monster1/(15).png</file>
+        <file>monster1/(16).png</file>
     </qresource>
 </RCC>

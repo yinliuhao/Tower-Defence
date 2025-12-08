@@ -5,6 +5,7 @@
 #include "global.h"
 #include <vector>
 #include "utils.h"
+#include<cmath>
 
 using namespace std;
 
@@ -13,8 +14,9 @@ Monster::Monster(MonsterType type,
                  float monsterHealth,
                  float monsterSpeed,
                  int monsterGold,
-                 QGraphicsItem* )
-    :type(type),   // 设置怪物类型
+                 QGraphicsItem*parent )
+    :QGraphicsPixmapItem(parent),
+    type(type),   // 设置怪物类型
     monsterHealth(monsterHealth),    // 设置初始生命值
     monsterSpeed(monsterSpeed),      // 设置移动速度
     monsterGold(monsterGold),        // 设置金币奖励
@@ -23,26 +25,29 @@ Monster::Monster(MonsterType type,
     currentFrameIndex(0),            // 动画帧索引从0开始
     animationTimer(nullptr),         // 计时器指针初始化为空
     moveTimer(nullptr)               // 移动计时器指针初始化为空
-{
-    // 设置怪物的变换原点为中心点，便于旋转和翻转
-    setTransformOriginPoint(16, 16);  // 32x32尺寸的中心点
-    path.resize(gMap->monsterPath.size());
-    for(int i = 0; i < (int)path.size(); i++)
-    {
-        QPointF point = gMap->gridToPixel(gMap->monsterPath[i].x(),  gMap->monsterPath[i].y());
-        path[i].x = point.x() - TILESIZE / 2.0;
-        path[i].y = point.y() - TILESIZE / 2.0;
-    }
-    setPos(gMap->monsterPath[0].x() - TILESIZE / 2.0, gMap->monsterPath[0].y() - TILESIZE / 2.0);
+{ 
     initializeMonster();
-    initializeTimers();
     startMove();
 }
 
 void Monster::initializeMonster()
 {
+    // 设置怪物的变换原点为中心点，便于旋转和翻转
+    setTransformOriginPoint(16, 16);  // 32x32尺寸的中心点
+    if(gMap){
+    path.resize(gMap->monsterPath.size());
+    for(int i = 0; i < (int)path.size(); i++)
+    {
+        QPointF point = gMap->gridToPixel(gMap->monsterPath[i].x(),  gMap->monsterPath[i].y());
+        path[i].x = point.x();
+        path[i].y = point.y();
+    }
+    monsterPosition.x=path[0].x;
+    monsterPosition.y=path[0].y;
+    setPos(monsterPosition.x - TILESIZE / 2.0, monsterPosition.y - TILESIZE / 2.0);
+    }
     // 加载动画帧资源
-    loadAnimationFrames();
+
 
     // 设置初始显示的图片
     if(!animationFrames.isEmpty()) {
@@ -115,6 +120,7 @@ void Monster::takeDamage(float damage)
             scene()->removeItem(this);
         }
         deleteLater();  // 安全延迟删除
+        return;
     }
 }
 
@@ -161,6 +167,21 @@ void Monster::moveToNextPosition()
     // 计算本次移动的距离（基于速度和帧时间）
     double moveDistance = monsterSpeed * (80.0 / 1000.0);  // 80ms = 0.08秒
 
+    if(fabs(direction.x)>fabs(direction.y)){
+        if(direction.x>0){
+            setRotation(-90);
+        }else{
+            setRotation(90);
+        }
+    }else{
+        if(direction.y>0){
+            setRotation(0);
+        }else{
+            setRotation(180);
+        }
+    }
+
+
     // 如果移动距离大于等于到目标点的距离，说明可以到达目标点
     if(moveDistance >= distance) {
         // 直接移动到目标点
@@ -195,28 +216,23 @@ void Monster::moveToNextPosition()
     }
 
     // 更新图形项在场景中的位置
-    setPos(monsterPosition.x, monsterPosition.y);
+    setPos(monsterPosition.x-16, monsterPosition.y-16);
 
-    if (direction.x > 0) {
 
-        setTransform(QTransform().rotate(90));
-    } else if (direction.x < 0) {
-
-        setTransform(QTransform().rotate(-90));
-    }else if (direction.y>0) {
-
-        setTransform(QTransform().rotate(180));
-    }
+}
+//----monster1----
+Monster1::Monster1(QGraphicsItem* parent):Monster(MonsterType::MONSTER1,MONSTER1_HEALTH,MONSTER1_SPEED,MONSTER1_GOLD,parent){
+    Monster1::loadAnimationFrames();
 }
 
-void Monster::loadAnimationFrames(){
+void Monster1::loadAnimationFrames(){
     animationFrames.clear();
     // 定义动画帧文件路径
     QStringList frameFiles;
-    frameFiles << ":/picture/monster1/walk1.png"
-               << ":/picture/monster1/walk2.png"
-               << ":/picture/monster1/walk3.png"
-               << ":/picture/monster1/walk4.png";
+    frameFiles << ":/picture/monster1/(1).png"
+               << ":/picture/monster1/(2).png"
+               << ":/picture/monster1/(3).png"
+               << ":/picture/monster1/(4).png";
 
     // 加载并处理每一帧图片
     for(const QString& filePath : frameFiles) {
@@ -235,5 +251,64 @@ void Monster::loadAnimationFrames(){
 }
 
 
+//----monster2----
+Monster2::Monster2(QGraphicsItem* parent):Monster(MonsterType::MONSTER2,MONSTER2_HEALTH,MONSTER2_SPEED,MONSTER2_GOLD,parent){
+    Monster2::loadAnimationFrames();
+}
+
+void Monster2::loadAnimationFrames(){
+    animationFrames.clear();
+    // 定义动画帧文件路径
+    QStringList frameFiles;
+    frameFiles << ":/picture/monster2/(1).png"
+               << ":/picture/monster2/(2).png"
+               << ":/picture/monster2/(3).png"
+               << ":/picture/monster2/(4).png";
+
+    // 加载并处理每一帧图片
+    for(const QString& filePath : frameFiles) {
+        QPixmap frame(filePath);
+        if(!frame.isNull()) {
+            // 将图片缩放为32x32尺寸，保持宽高比，使用平滑变换
+            frame = frame.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            animationFrames.append(frame);
+        }
+    }
+
+    // 设置初始显示的图片
+    if (!animationFrames.isEmpty()) {
+        setPixmap(animationFrames.first());
+    }
+}
+
+//----monster3----
+Monster3::Monster3(QGraphicsItem* parent):Monster(MonsterType::MONSTER3,MONSTER3_HEALTH,MONSTER3_SPEED,MONSTER3_GOLD,parent){
+    Monster3::loadAnimationFrames();
+}
+
+void Monster3::loadAnimationFrames(){
+    animationFrames.clear();
+    // 定义动画帧文件路径
+    QStringList frameFiles;
+    frameFiles << ":/picture/monster3/(1).png"
+               << ":/picture/monster3/(2).png"
+               << ":/picture/monster3/(3).png"
+               << ":/picture/monster3/(4).png";
+
+    // 加载并处理每一帧图片
+    for(const QString& filePath : frameFiles) {
+        QPixmap frame(filePath);
+        if(!frame.isNull()) {
+            // 将图片缩放为32x32尺寸，保持宽高比，使用平滑变换
+            frame = frame.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            animationFrames.append(frame);
+        }
+    }
+
+    // 设置初始显示的图片
+    if (!animationFrames.isEmpty()) {
+        setPixmap(animationFrames.first());
+    }
+}
 
 

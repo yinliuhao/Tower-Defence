@@ -16,6 +16,7 @@ SOURCES += \
     map.cpp \
     menuWidget.cpp \
     monster.cpp \
+    monsterSpawner.cpp \
     player.cpp \
     playerUI.cpp \
     towerButton.cpp \
@@ -28,6 +29,7 @@ HEADERS += \
     map.h \
     menuWidget.h \
     monster.h \
+    monsterSpawner.h \
     player.h \
     playerUI.h \
     structVector.h \
