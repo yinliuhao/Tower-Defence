@@ -14,22 +14,29 @@ public:
     explicit PlayerUI(QWidget *parent = nullptr);
     int getWidth()  {return width;}
     int getHeight()  {return height;}
-    void itoa(int value, std::vector<int>& out);
-    void add(int value, std::vector<int>& out);
-    int atoi(const std::vector<int>& out);
-    bool sub(int value, std::vector<int>& out);
+    std::vector<int> itov(int value);
+    int vtoi(const std::vector<int> out);
+    void add(int value, int index);
+    bool sub(int value, int index);
     void initStatusBar(int numWid, int numHei, int statuWid, int statuHei);
     void loadStatuTextures();
     void loadNumTextures();
-    void updateSglBar(const std::vector<int>& digits, int n);
-    void updateUI(const std::vector<int>& health, const std::vector<int>& money, const std::vector<int>& wave);
-    bool updateSglNum(std::vector<int>& digits, int num);
+    void updateSglBar(int index);
+    void updateUI();
     void loadFrame();
 
 private:
-    std::vector<int> money;  //数组式金钱
-    std::vector<int> health;  //数组式生命
-    std::vector<int> wave;   //数组式波次
+    int statuBarNum;  //状态栏数目
+
+    int money;  //金钱
+    int campHealth;  //基地生命
+    int playerHealth;   //玩家生命
+    int wave;   //波次
+    int wood;
+    int stone;
+    int bronze;
+    int silver;
+    int gold;
 
     int width;  //UI宽度
     int height;  //UI高度
@@ -37,7 +44,7 @@ private:
     int maxDig;  //存储最高位数
     int maxNum;  //存储最大数值
 
-    int statuBarNum;  //状态栏数目
+
     std::vector<std::vector<QLabel*>> statusBar;    //存储状态栏标签
     QPixmap picFrame;  //存储边框图
     QLabel* frame;   //存储边框标签
@@ -49,6 +56,9 @@ private:
     std::vector<QPixmap> statuTextures;   //存储状态栏头图片
 
 signals:
+    void gameOver();
+    void campHurted();
+    void playerHurted();
 };
 
 #endif // PLAYERUI_H

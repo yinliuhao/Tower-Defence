@@ -18,12 +18,28 @@
 
 //UI
 #define INITMONEY 100
-#define INITHEALTH 100
+#define INITCAMPHEALTH 100
+#define INITPLAYERHEALTH 100
 #define INITWAVE 10
+#define INITWOOD 0
+#define INITSTONE 0
+#define INITBRONZE 0
+#define INITSILVER 0
+#define INITGOLD 0
+
+#define CAMPHEALTH 0
+#define PLAYERHEALTH 1
+#define MONEY 2
+#define WAVE 3
+#define WOOD 4
+#define STONE 5
+#define BRONZE 6
+#define SILVER 7
+#define GOLD 8
 
 #define BARWIDTH (5 * TILESIZE + BTNHEIGHT)
 #define BARHEIGHT (6 * TILESIZE)
-#define DIGIT 5
+#define DIGIT 2
 #define BARNUM 3
 
 #define NUMWIDTH 27
@@ -43,8 +59,8 @@
 #define MAPZVALUE -10
 #define TOWERZVALUE 10
 #define MONSTERZVALUE 5
-#define BUTTONZVALUE 0
-#define PLAYERZVALUE 8
+#define PLAYERZVALUE 5
+#define SOURCEZVALUE -10
 
 //玩家
 #define PLAYERWIDTH TILESIZE
@@ -53,7 +69,7 @@
 #define ROLLSPEED 500.0
 
 //怪物
-#define MONSTER_ATTACK_INTERWAL 2500
+#define MONSTER_ATTACK_INTERVAL 2500
 //monster1
 #define MONSTER1_HEALTH 100.0
 #define MONSTER1_SPEED 200.0
@@ -70,9 +86,19 @@
 #define MONSTER3_GOLD 40
 #define MONSTER3_DAMAGE 3
 
-//计时器
-#define SPEEDDELTA 8   //单位：ms
-#define WAKEDELTA 80
-#define ROLLDELTA 15
+//怪物管理器
+#define SPAWNINTERVAL 3.0
+#define WAVEINTERVAL 30.0
+
+//计时器——玩家
+#define SPEEDDELTA 8   //玩家位置更新间隔 单位：ms
+#define WAKEDELTA 80   //玩家行走动画更新间隔
+#define ROLLDELTA 15   //玩家翻滚动画更新间隔
 #define ROLLTIMES 3  //每次按shift键人物翻滚效果圈数
+
+//计时器——怪物
+#define MONSTERDELTA 150
+#define MONSTERMOVE 20
+#define ATTACKDELAY 500
+#define ATTACKDELTA 100
 #endif // UTILS_H

@@ -1,10 +1,10 @@
 
 #include "monsterSpawner.h"
 #include "monster.h"
-#include "global.h"
 #include <QPainter>
 #include <QDebug>
 #include <QTime>
+#include "utils.h"
 #include <QRandomGenerator>
 
 // 构造函数
@@ -13,8 +13,8 @@ MonsterSpawnerTower::MonsterSpawnerTower(QGraphicsItem* parent)
     currentWave(1),
     monstersInCurrentWave(0),
     totalMonstersInWave(0),
-    spawnInterval(3.0f),  // 初始3秒生成一个怪物
-    waveInterval(30.0f), // 每30秒一波
+    spawnInterval(SPAWNINTERVAL),  // 初始3秒生成一个怪物
+    waveInterval(WAVEINTERVAL), // 每30秒一波
     spawnTimer(nullptr),
     waveTimer(nullptr)
 {
@@ -97,7 +97,6 @@ void MonsterSpawnerTower::spawnMonster()
     if (newMonster) {
         emit monsterSpawned(newMonster);
         monstersInCurrentWave++;
-
     }
 }
 
@@ -106,7 +105,7 @@ void MonsterSpawnerTower::updateWave()
 {
     currentWave++;
     // 计算新一波的怪物数量
-    totalMonstersInWave = static_cast<int>(5 + currentWave * 1.5f);// 指数增长
+    totalMonstersInWave = static_cast<int>(5 + currentWave * 1.5f);// 线性增长
     monstersInCurrentWave = 0;
     spawnInterval = qMax(0.5f, 3.0f - (currentWave - 1) * 0.2f);
      // 如果之前停止了生成计时器，重新开始

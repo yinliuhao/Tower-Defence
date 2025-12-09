@@ -39,7 +39,6 @@ void Map::initializeTileData()
             int tmp;
             ifs1 >> tmp;
             tileState[i][j] = (TileState)tmp;
-            qDebug() << tileState[i][j];
         }
     }
 
@@ -68,7 +67,7 @@ void Map::initializeTileData()
     monsterPath.resize(19);
     monsterPath = {QPointF(4, 6), QPointF(14, 6), QPointF(14, 21), QPointF(9, 21), QPointF(9, 32), QPointF(20, 32),
                    QPointF(20, 22), QPointF(27, 22), QPointF(27, 8), QPointF(23, 8), QPointF(23, 31), QPointF(31, 31),
-                   QPointF(31, 40), QPointF(23, 43), QPointF(23, 46), QPointF(20, 46), QPointF(17, 46), QPointF(17, 47), QPointF(7, 47)};
+                   QPointF(31, 40), QPointF(23, 40), QPointF(23, 46), QPointF(20, 46), QPointF(17, 46), QPointF(17, 47), QPointF(7, 47)};
 }
 
 //注意！！！像素的原点为左上点，x轴为从左到右，y轴为从上到下

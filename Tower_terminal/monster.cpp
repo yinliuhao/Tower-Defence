@@ -54,7 +54,6 @@ void Monster::initializeMonster()
     }
     // 加载动画帧资源
 
-
     // 设置初始显示的图片
     if(!animationFrames.isEmpty()) {
         setPixmap(animationFrames.first());
@@ -99,9 +98,9 @@ void Monster::startMove()
     }
 
     // 启动动画计时器（150ms间隔）
-    animationTimer->start(150);
+    animationTimer->start(MONSTERDELTA);
     // 启动移动计时器（80ms间隔）
-    moveTimer->start(80);
+    moveTimer->start(MONSTERMOVE);
 }
 
 // 停止所有计时器，冻结怪物状态
@@ -189,7 +188,7 @@ void Monster::moveToNextPosition()
     double distance = currentPos.distanceTo(targetPos);
 
     // 计算本次移动的距离（基于速度和帧时间）
-    double moveDistance = monsterSpeed * (80.0 / 1000.0);  // 80ms = 0.08秒
+    double moveDistance = monsterSpeed * (MONSTERMOVE / 1000.0);  // 80ms = 0.08秒
 
     if(fabs(direction.x)>fabs(direction.y)){
         if(direction.x>0){
@@ -236,7 +235,7 @@ void Monster::moveToNextPosition()
     }
 
     // 更新图形项在场景中的位置
-    setPos(monsterPosition.x-16, monsterPosition.y-16);
+    setPos(monsterPosition.x - 16, monsterPosition.y - 16);
 
 }
 
@@ -247,38 +246,40 @@ void Monster::startAttack()
         return;
     }
     isAttacking=true;
-    currentState=MonsterState::ATTACKING;
+    currentState = MonsterState::ATTACKING;
 
     stopMove();
     if(animationTimer&&animationTimer->isActive()){
-        animationTimer->start(150);
+        animationTimer->start(MONSTERDELTA);
     }
     isAttackAnimation=true;
     if(!attackFrames.isEmpty()){
         setPixmap(attackFrames.first());
-        currentFrameIndex=0;
+        currentFrameIndex = 0;
         updateAnimationFrame();
     }
 
-    attackTimer->start(MONSTER_ATTACK_INTERWAL);
+    attackTimer->start(MONSTER_ATTACK_INTERVAL);
     emit startedAttackingCamp();
-    QTimer::singleShot(500,this,&Monster::performAttack);
+    QTimer::singleShot(ATTACKDELAY, this,&Monster::performAttack);
 }
+
 //停止攻击营地
 void Monster::stopAttack()
 {
     if(attackTimer&&attackTimer->isActive()){
         attackTimer->stop();
     }
-    isAttacking=false;
-    currentState=MonsterState::MOVING;
-    isAttackAnimation=false;
+    isAttacking = false;
+    currentState = MonsterState::MOVING;
+    isAttackAnimation = false;
     if(!animationFrames.isEmpty()){
         setPixmap(animationFrames.first());
-        currentFrameIndex=0;
+        currentFrameIndex = 0;
     }
     emit stoppedAttackingCamp();
 }
+
 void Monster::performAttack(){
     if(isDead()||!isAttacking){
         stopAttack();
@@ -286,10 +287,11 @@ void Monster::performAttack(){
     }
     emit attackedCamp(attackDamage);
     setScale(1.2);
-    QTimer::singleShot(100,this,[this](){
+    QTimer::singleShot(ATTACKDELTA, this,[this](){
         setScale(1.0);
     });
 }
+
 //----monster1----
 Monster1::Monster1(QGraphicsItem* parent):Monster(MonsterType::MONSTER1,MONSTER1_HEALTH,MONSTER1_SPEED,MONSTER1_GOLD,MONSTER1_DAMAGE,parent){
     Monster1::loadAnimationFrames();

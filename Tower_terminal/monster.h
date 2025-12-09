@@ -59,7 +59,6 @@ public:
     MonsterState getMonsterState()const {return currentState;} //获取当前状态
     bool isAttackingCamp()const {return isAttacking;} //是否攻击
 
-
     // 获取怪物标准尺寸
     static QSize getMonsterSize() { return QSize(32, 32); }//一个格子的大小
 
