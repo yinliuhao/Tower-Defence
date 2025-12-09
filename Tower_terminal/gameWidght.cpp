@@ -50,6 +50,18 @@ Game::Game(QWidget *parent)
     connect(monsterSpawner, &MonsterSpawnerTower::monsterSpawned, this, [this](Monster* monster) {
         scene->addItem(monster);
         monster->startMove();  // 开始移动
+        // 连接怪物攻击信号
+       // connect(monster, &Monster::attackedCamp, this, &Game::handleCampAttacked);
+
+        // 连接怪物开始攻击信号
+        connect(monster, &Monster::startedAttackingCamp, this, [monster]() {
+            qDebug() << "怪物开始攻击营地！";
+        });
+
+        // 连接怪物停止攻击信号
+        connect(monster, &Monster::stoppedAttackingCamp, this, [monster]() {
+            qDebug() << "怪物停止攻击营地！";
+        });
 
         // 连接怪物死亡信号
         connect(monster, &Monster::died, this, [this, monster](int gold) {

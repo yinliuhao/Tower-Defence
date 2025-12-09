@@ -53,19 +53,22 @@
 #define ROLLSPEED 500.0
 
 //怪物
+#define MONSTER_ATTACK_INTERWAL 2500
 //monster1
 #define MONSTER1_HEALTH 100.0
-#define MONSTER1_SPEED 60.0
+#define MONSTER1_SPEED 200.0
 #define MONSTER1_GOLD 10
+#define MONSTER1_DAMAGE 1
 //monster2
 #define MONSTER2_HEALTH 200.0
 #define MONSTER2_SPEED 40.0
 #define MONSTER2_GOLD 20
+#define MONSTER2_DAMAGE 2
 //monster3
 #define MONSTER3_HEALTH 400.0
 #define MONSTER3_SPEED 20.0
 #define MONSTER3_GOLD 40
-
+#define MONSTER3_DAMAGE 3
 
 //计时器
 #define SPEEDDELTA 8   //单位：ms

@@ -28,6 +28,7 @@ public:
     void keyReleaseEvent(QKeyEvent *ev);
 
 private slots:
+   // void handleCampAttacked(float damage);
 
 private:
     Ui::Game *ui;
