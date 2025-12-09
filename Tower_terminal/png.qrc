@@ -83,5 +83,21 @@
         <file>monster1/(14).png</file>
         <file>monster1/(15).png</file>
         <file>monster1/(16).png</file>
+        <file>monster4/(1).png</file>
+        <file>monster4/(2).png</file>
+        <file>monster4/(3).png</file>
+        <file>monster4/(4).png</file>
+        <file>monster4/(5).png</file>
+        <file>monster4/(6).png</file>
+        <file>monster4/(7).png</file>
+        <file>monster4/(8).png</file>
+        <file>monster4/(9).png</file>
+        <file>monster4/(10).png</file>
+        <file>monster4/(11).png</file>
+        <file>monster4/(12).png</file>
+        <file>monster4/(13).png</file>
+        <file>monster4/(14).png</file>
+        <file>monster4/(15).png</file>
+        <file>monster4/(16).png</file>
     </qresource>
 </RCC>
