@@ -60,6 +60,7 @@ void MonsterSpawnerTower::initializeTimers()
     animationTimer->start(MONSTERDELTA);
     // 启动移动计时器（80ms间隔）
     moveTimer->start(MONSTERMOVE);
+    attackTimer->start(ATTACKDELTA);
 }
 
 // 初始化生成器
@@ -188,7 +189,7 @@ void MonsterSpawnerTower::updateAllAnimationFrame()
 {
     for (Monster* m : monsters)
     {
-        if(m->isAttackingCamp()) continue;
+
         if (m->isDead()) continue;
         m->updateAnimationFrame();
     }
