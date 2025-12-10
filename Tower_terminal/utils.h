@@ -85,6 +85,11 @@
 #define MONSTER3_SPEED 20.0
 #define MONSTER3_GOLD 40
 #define MONSTER3_DAMAGE 3
+//monster4
+#define MONSTER4_HEALTH 400.0
+#define MONSTER4_SPEED 20.0
+#define MONSTER4_GOLD 40
+#define MONSTER4_DAMAGE 3
 
 //怪物管理器
 #define SPAWNINTERVAL 3.0

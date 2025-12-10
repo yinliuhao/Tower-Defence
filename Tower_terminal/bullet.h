@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QPixmap>
 #include "structVector.h"
+#include "monster.h"
 
 #define BULLET_SPEED 8.0f
 #define BULLET_TOLERANCE 5.0f
@@ -61,6 +62,8 @@ private:
     void loadDefaultPixmap();
     bool isAtTarget() const;
     void hitTarget();
+
+    Monster * target;
 
 signals:
     void hit(const Vector2& position);

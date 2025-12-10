@@ -1,4 +1,3 @@
-
 #include "monsterSpawner.h"
 #include "monster.h"
 #include <QPainter>
@@ -6,6 +5,9 @@
 #include <QTime>
 #include "utils.h"
 #include <QRandomGenerator>
+#include "global.h"
+#include "monster.h"
+#include <QObject>
 
 // 构造函数
 MonsterSpawnerTower::MonsterSpawnerTower(QGraphicsItem* parent)
@@ -16,7 +18,10 @@ MonsterSpawnerTower::MonsterSpawnerTower(QGraphicsItem* parent)
     spawnInterval(SPAWNINTERVAL),  // 初始3秒生成一个怪物
     waveInterval(WAVEINTERVAL), // 每30秒一波
     spawnTimer(nullptr),
-    waveTimer(nullptr)
+    waveTimer(nullptr),
+    animationTimer(nullptr),         // 计时器指针初始化为空
+    moveTimer(nullptr),              // 移动计时器指针初始化为空
+    attackTimer(nullptr)
 {
     setTransformOriginPoint(16, 16);
 
@@ -26,6 +31,7 @@ MonsterSpawnerTower::MonsterSpawnerTower(QGraphicsItem* parent)
     // 加载图片和初始化
 
     initialize();
+    initializeTimers();
 }
 
 // 析构函数
@@ -36,8 +42,25 @@ MonsterSpawnerTower::~MonsterSpawnerTower()
     delete waveTimer;
 }
 
+// 初始化计时器系统
+void MonsterSpawnerTower::initializeTimers()
+{
+    // 创建动画计时器，每150毫秒触发一次动画更新
+    animationTimer = new QTimer(this);
+    connect(animationTimer, &QTimer::timeout, this, &MonsterSpawnerTower::updateAllAnimationFrame);
 
+    // 创建移动计时器，每80毫秒触发一次位置更新
+    moveTimer = new QTimer(this);
+    connect(moveTimer, &QTimer::timeout, this, &MonsterSpawnerTower::updateAllMonstersPosition);
 
+    attackTimer = new QTimer(this);
+    connect(attackTimer, &QTimer::timeout, this, &MonsterSpawnerTower::performAllAttack);
+
+    // 启动动画计时器（150ms间隔）
+    animationTimer->start(MONSTERDELTA);
+    // 启动移动计时器（80ms间隔）
+    moveTimer->start(MONSTERMOVE);
+}
 
 // 初始化生成器
 void MonsterSpawnerTower::initialize()
@@ -73,6 +96,8 @@ void MonsterSpawnerTower::stopSpawning()
     }
 }
 
+// ==================== 生成怪物 ====================
+
 // 生成单个怪物
 void MonsterSpawnerTower::spawnMonster()
 {
@@ -80,27 +105,126 @@ void MonsterSpawnerTower::spawnMonster()
         spawnTimer->stop();
         return;
     }
+
  // 根据当前波数决定生成的怪物类型
     Monster* newMonster = nullptr;
+
     QRandomGenerator* random = QRandomGenerator::global();
     int monsterType = random->bounded(100);
     // 10波后，20%概率生成怪物3
+
     if (currentWave >= 10 && monsterType < 20) {
         newMonster = new Monster3();
      // 5波后，40%概率生成怪物2
-    } else if (currentWave >= 5 && monsterType < 40) {
+    }
+    else if (currentWave >= 5 && monsterType < 40) {
         newMonster = new Monster2();
-    } else {
+    }
+    else {
         newMonster = new Monster1();
     }
 
     if (newMonster) {
         emit monsterSpawned(newMonster);
+        monsters.push_back(newMonster);
+
+        addMonsterToGrid(newMonster);
+
         monstersInCurrentWave++;
     }
 }
 
-// 更新波数和难度
+// ==================== 网格管理 ====================
+
+void MonsterSpawnerTower::addMonsterToGrid(Monster* m)
+{
+    QPoint m_grid = gMap->pixelToGrid(QPointF(m->x(), m->y()));
+    int gx = m_grid.x();
+    int gy = m_grid.y();
+
+    if (gx < 0 || gx >= 90 || gy < 0 || gy >= 60) return;
+
+    grid[gx][gy].push_back(m);
+}
+
+void MonsterSpawnerTower::removeMonsterFromGrid(Monster* m)
+{
+    QPoint m_grid = gMap->pixelToGrid(QPointF(m->x(), m->y()));
+    int gx = m_grid.x();
+    int gy = m_grid.y();
+
+    if (gx < 0 || gx >= 90 || gy < 0 || gy >= 60) return;
+
+    auto& vec = grid[gy][gx];
+    vec.erase(std::remove(vec.begin(), vec.end(), m), vec.end());
+}
+
+// ==================== 更新所有怪物（移动+更新格子+换图） ====================
+void MonsterSpawnerTower::updateAllMonstersPosition()
+{
+    for (Monster* m : monsters)
+    {
+        if (m->isDead()) continue;
+
+        QPoint old_grid = gMap->pixelToGrid(QPointF(m->x(), m->y()));
+        int oldX = old_grid.x();
+        int oldY = old_grid.y();
+
+        m->moveToNextPosition(); // 你自己的怪物移动逻辑
+
+        QPoint new_grid = gMap->pixelToGrid(QPointF(m->x(), m->y()));
+        int newX = new_grid.x();
+        int newY = new_grid.y();
+
+        if (newX != oldX || newY != oldY)
+        {
+            removeMonsterFromGrid(m);
+            addMonsterToGrid(m);
+        }
+    }
+}
+
+void MonsterSpawnerTower::updateAllAnimationFrame()
+{
+    for (Monster* m : monsters)
+    {
+        if(m->isAttackingCamp()) continue;
+        if (m->isDead()) continue;
+        m->updateAnimationFrame();
+    }
+}
+
+void MonsterSpawnerTower::performAllAttack()
+{
+    for (Monster* m : monsters)
+    {
+        if(!m->isAttackingCamp()) continue;
+        if (m->isDead()) continue;
+        m->performAttack();
+    }
+}
+
+
+// ==================== 删除死亡怪物 ====================
+void MonsterSpawnerTower::cleanupMonsters()
+{
+    for (int i = monsters.size() - 1; i >= 0; --i)
+    {
+        Monster* m = monsters[i];
+        if (!m->isDead()) continue;
+
+        removeMonsterFromGrid(m);
+
+        delete m;
+
+        monsters[i] = monsters.back();
+        monsters.pop_back();
+    }
+}
+
+
+
+// ==================== 波次更新 ====================
 void MonsterSpawnerTower::updateWave()
 {
     currentWave++;

@@ -49,7 +49,6 @@ Game::Game(QWidget *parent)
     // 连接怪物生成信号
     connect(monsterSpawner, &MonsterSpawnerTower::monsterSpawned, this, [this](Monster* monster) {
         scene->addItem(monster);
-        monster->startMove();  // 开始移动
         // 连接怪物攻击信号
        // connect(monster, &Monster::attackedCamp, this, &Game::handleCampAttacked);
 

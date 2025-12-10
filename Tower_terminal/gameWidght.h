@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "towerButton.h"
-#include "player.h"
 #include "playerUI.h"
 #include <vector>
 #include <QGraphicsView>
@@ -11,8 +10,6 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QTime>
-#include"monster.h"
-#include"monsterSpawner.h"
 namespace Ui {
 class Game;
 }
@@ -41,14 +38,10 @@ private:
     int towerNum;  // 炮塔种类数
     std::vector<TowerButton*> tower;   // 炮塔按钮
     PlayerUI *myUI;   // UI界面
-    Player * me;
+
     QTimer * viewTimer;
     bool uiVisible;
     bool buttonVisible;
-
-
-    MonsterSpawnerTower* monsterSpawner;//怪物生成器
-
 };
 
 #endif // GAMEWIDGHT_H

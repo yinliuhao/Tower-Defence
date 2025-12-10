@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/picture">
         <file>menuBackground/menuBackground.png</file>
-        <file>UI/health.png</file>
         <file>UI/money.png</file>
         <file>UI/wave.png</file>
         <file>UI/6.png</file>
@@ -99,5 +98,12 @@
         <file>monster4/(14).png</file>
         <file>monster4/(15).png</file>
         <file>monster4/(16).png</file>
+        <file>UI/bronze.png</file>
+        <file>UI/campHealth.png</file>
+        <file>UI/gold.png</file>
+        <file>UI/playerHealth.png</file>
+        <file>UI/silver.png</file>
+        <file>UI/stone.png</file>
+        <file>UI/wood.png</file>
     </qresource>
 </RCC>

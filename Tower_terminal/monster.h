@@ -29,10 +29,6 @@ class Monster : public QObject, public QGraphicsPixmapItem {//public QObject, pu
 public:
     // 修改构造函数，不需要传入路径，但需要传入Map指针
     Monster(MonsterType type,       // 怪物类型
-            float monsterHealth,    // 怪物初始生命值
-            float monsterSpeed,     // 怪物移动速度
-            int monsterGold,        // 怪物被击败时奖励的金币
-            float attackDamage,     // 攻击伤害
             QGraphicsItem* parent = nullptr);
 
     virtual ~Monster();
@@ -102,18 +98,11 @@ protected:
     float attackDamage;
     bool isAttacking;
 
-
     // 动画系统相关
     QVector<QPixmap> animationFrames;  // 移动动画帧图片集合
     QVector<QPixmap>attackFrames;      // 攻击动画帧集合
     int currentFrameIndex;             // 当前动画帧索引
     bool isAttackAnimation;            // 是否播放攻击动画
-
-
-private:
-    QTimer* animationTimer;    // 动画更新计时器
-    QTimer* moveTimer;         // 位置移动计时器
-    QTimer* attackTimer;       // 攻击计时器
 };
 
 class Monster1:public Monster{
@@ -131,7 +120,7 @@ public:
     Monster2(QGraphicsItem* parent = nullptr);
 protected:
     virtual void loadAnimationFrames()override;
-     virtual void loadAttackFrames()override;
+    virtual void loadAttackFrames()override;
 };
 
 class Monster3:public Monster{
@@ -140,7 +129,7 @@ public:
     Monster3(QGraphicsItem* parent = nullptr);
 protected:
     virtual void loadAnimationFrames()override;
-     virtual void loadAttackFrames()override;
+    virtual void loadAttackFrames()override;
 };
 
 

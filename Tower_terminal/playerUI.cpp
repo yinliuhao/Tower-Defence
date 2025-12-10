@@ -154,7 +154,7 @@ void PlayerUI::loadNumTextures()
 void PlayerUI::loadStatuTextures()
 {
     statuTextures.resize(3);
-    statuTextures[0].load(":/picture/UI/health.png");
+    statuTextures[0].load(":/picture/UI/palyerHealth.png");
     statuTextures[1].load(":/picture/UI/money.png");
     statuTextures[2].load(":/picture/UI/wave.png");
 }
