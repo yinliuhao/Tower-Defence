@@ -104,6 +104,6 @@
 //计时器——怪物
 #define MONSTERDELTA 150
 #define MONSTERMOVE 20
-#define ATTACKDELAY 500
+#define ATTACKDELAY 1500
 #define ATTACKDELTA 100
 #endif // UTILS_H

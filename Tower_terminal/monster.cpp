@@ -6,6 +6,7 @@
 #include <vector>
 #include "utils.h"
 #include<cmath>
+#include"monsterSpawner.h"
 
 using namespace std;
 
@@ -104,20 +105,30 @@ void Monster::takeDamage(float damage)
 void Monster::updateAnimationFrame()
 {
 
-    if(isAttackAnimation&&!attackFrames.isEmpty()){
-        currentFrameIndex=(currentFrameIndex+1)%attackFrames.size();
-        setPixmap(attackFrames[currentFrameIndex]);
+    if (isDead()) return;
+
+    // 根据当前状态选择动画帧集合
+    QVector<QPixmap>* currentFrames = nullptr;
+    int* currentIndex = &currentFrameIndex;
+    int frameCount = 0;
+
+    if (isAttackAnimation && !attackFrames.isEmpty()) {
+        // 攻击动画
+        currentFrames = &attackFrames;
+        frameCount = attackFrames.size();
+    } else if (!animationFrames.isEmpty()) {
+        // 移动动画
+        currentFrames = &animationFrames;
+        frameCount = animationFrames.size();
     }
-    else if(!animationFrames.isEmpty()) {
 
-        // 更新当前帧索引（循环）
-        currentFrameIndex = (currentFrameIndex + 1) % animationFrames.size();
-
-        // 设置当前显示的图片
-        setPixmap(animationFrames[currentFrameIndex]);
+    // 如果有可用的动画帧，更新它们
+    if (currentFrames && !currentFrames->isEmpty() && frameCount > 0) {
+        *currentIndex = (*currentIndex + 1) % frameCount;
+        setPixmap(currentFrames->at(*currentIndex));
     }
-
 }
+
 
 // 移动到下一个路径点
 void Monster::moveToNextPosition()
@@ -210,11 +221,14 @@ void Monster::startAttack()
     currentState = MonsterState::ATTACKING;
     isAttackAnimation = true;
 
+
     if(!attackFrames.isEmpty()){
-        setPixmap(attackFrames.first());
+
         currentFrameIndex = 0;
+        setPixmap(attackFrames.first());
         updateAnimationFrame();
     }
+
 
     emit startedAttackingCamp();
     QTimer::singleShot(ATTACKDELAY, this,&Monster::performAttack);
@@ -283,10 +297,10 @@ void Monster1::loadAttackFrames(){
     attackFrames.clear();
     // 定义动画帧文件路径
     QStringList frameFiles;
-    frameFiles << ":/picture/monster1/(5).png"
-               << ":/picture/monster1/(6).png"
-               << ":/picture/monster1/(7).png"
-               << ":/picture/monster1/(8).png";
+    frameFiles << ":/picture/monster1/(9).png"
+               << ":/picture/monster1/(10).png"
+               << ":/picture/monster1/(11).png"
+               << ":/picture/monster1/(12).png";
 
 
     // 加载并处理每一帧图片
