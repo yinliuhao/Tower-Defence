@@ -153,9 +153,9 @@ void MonsterSpawnerTower::removeMonsterFromGrid(Monster* m)
     int gx = m_grid.x();
     int gy = m_grid.y();
 
-    if (gx < 0 || gx >= 90 || gy < 0 || gy >= 60) return;
+    if (gx < 0 || gx >= 60 || gy < 0 || gy >= 90) return;
 
-    auto& vec = grid[gy][gx];
+    auto& vec = grid[gx][gy];
     vec.erase(std::remove(vec.begin(), vec.end(), m), vec.end());
 }
 

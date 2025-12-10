@@ -9,6 +9,7 @@
 #include "monster.h"
 
 #define BULLET_SPEED 8.0f
+#define BULLET_DAMAGE 10.0f
 #define BULLET_TOLERANCE 5.0f
 #define UPDATE_INTERVAL_MS 16
 #define BULLET_FRAME_DELAY 100
@@ -19,8 +20,8 @@ class Bullet : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 
 public:
-    Bullet(const Vector2& startPos, const Vector2& targetPos,
-           float speed = BULLET_SPEED, QGraphicsItem* parent = nullptr);
+    Bullet(const Vector2& startPos, const Monster* target,
+           float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
     ~Bullet();
 
     QRectF boundingRect() const override;
@@ -29,15 +30,18 @@ public:
     QPainterPath shape() const override;
 
     void updatePosition();
+
     bool isActive() const { return active_; }
     bool hasHit() const { return hasHit_; }
-    const Vector2& getPosition() const { return position_; }
-    const Vector2& getTargetPosition() const { return targetPos_; }
+    const Vector2 getPosition() const { return position_; }
+    const Monster* getTarget() const { return target; }
+    float getDamage() { return damage_; }
     float getRotation() const { return rotation_; }
 
     void startEffect();
     void setBulletPixmap(const QPixmap& pixmap);
     void setBulletPixmap(const QString& imagePath);
+
 
 public slots:
     void onUpdateTimer();
@@ -45,8 +49,9 @@ public slots:
 
 private:
     Vector2 position_;
-    Vector2 targetPos_;
+    const Monster * target;
     float speed_;
+    float damage_;
     bool active_;
     bool hasHit_;
     float tolerance_;
@@ -63,10 +68,8 @@ private:
     bool isAtTarget() const;
     void hitTarget();
 
-    Monster * target;
-
 signals:
-    void hit(const Vector2& position);
+    void hit(int damage);
 };
 
 #endif // BULLET_H

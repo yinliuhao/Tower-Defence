@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     bullet.cpp \
+    bulletmanager.cpp \
     gameWidght.cpp \
     global.cpp \
     main.cpp \
@@ -19,11 +20,13 @@ SOURCES += \
     monsterSpawner.cpp \
     player.cpp \
     playerUI.cpp \
+    tower.cpp \
     towerButton.cpp \
     utils.cpp \
 
 HEADERS += \
     bullet.h \
+    bulletmanager.h \
     gameWidght.h \
     global.h \
     map.h \
@@ -33,6 +36,7 @@ HEADERS += \
     player.h \
     playerUI.h \
     structVector.h \
+    tower.h \
     towerButton.h \
     utils.h \
 

@@ -27,6 +27,7 @@ public:
 
     // 全部怪物（真正保存的容器）
     std::vector<Monster*> monsters;
+    std::vector<Monster*> grid[MAPHEIGHT / TILESIZE][MAPWIDTH / TILESIZE];
 
 signals:
     // 信号：怪物被生成（用于在Game类中添加到场景）
@@ -46,9 +47,6 @@ private:
     void addMonsterToGrid(Monster* m);
     void removeMonsterFromGrid(Monster* m);
     void initializeTimers();
-
-    // 空间网格（60×90）
-    std::vector<Monster*> grid[MAPHEIGHT / TILESIZE][MAPWIDTH / TILESIZE];
 
     // 生成器属性
     int currentWave;           // 当前波数
