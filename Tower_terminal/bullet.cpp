@@ -7,16 +7,17 @@
 #include "utils.h"
 
 
-Bullet::Bullet(const Vector2& startPos, const Vector2& targetPos,
-               float speed, QGraphicsItem* parent)
+Bullet::Bullet(const Vector2& startPos, const Monster* target,
+               float speed, float damage, QGraphicsItem* parent)
     : QGraphicsItem(parent),
     position_(startPos),
-    targetPos_(targetPos),
+    target(target),
     speed_(speed),
+    damage_(damage),
     active_(true),
     hasHit_(false),
     tolerance_(BULLET_TOLERANCE),
-    rotation_(0),
+    rotation_(90),
     currentFrame_(0),
     totalFrames_(1),
     pixmapSize_(20, 10)  // 默认尺寸
@@ -25,7 +26,7 @@ Bullet::Bullet(const Vector2& startPos, const Vector2& targetPos,
     loadDefaultPixmap();
 
     setPos(QPointF(startPos.x, startPos.y));
-    setZValue(10);
+    setZValue(BULLETZVALUE);
 
     updateTimer_ = new QTimer(this);
     connect(updateTimer_, &QTimer::timeout, this, &Bullet::onUpdateTimer);
@@ -128,6 +129,7 @@ void Bullet::updatePosition()
 {
     if (!active_ || hasHit_) return;
 
+    Vector2 targetPos_ = target->getPosition();
     Vector2 direction = targetPos_ - position_;
     float distance = direction.distanceTo(Vector2(0, 0));
 
@@ -156,7 +158,7 @@ void Bullet::updatePosition()
 
 bool Bullet::isAtTarget() const
 {
-    float distance = position_.distanceTo(targetPos_);
+    Vector2 targetPos_ = target->getPosition();    float distance = position_.distanceTo(targetPos_);
     return distance <= tolerance_;
 }
 
@@ -170,7 +172,7 @@ void Bullet::hitTarget()
     }
 
     startEffect();
-    emit hit(targetPos_);
+    emit hit(damage_);
 
     if (scene()) {
         scene()->removeItem(this);

@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "towerButton.h"
-#include "player.h"
 #include "playerUI.h"
 #include <vector>
 #include <QGraphicsView>
@@ -11,7 +10,6 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QTime>
-
 namespace Ui {
 class Game;
 }
@@ -27,6 +25,7 @@ public:
     void keyReleaseEvent(QKeyEvent *ev);
 
 private slots:
+   // void handleCampAttacked(float damage);
 
 private:
     Ui::Game *ui;
@@ -39,7 +38,7 @@ private:
     int towerNum;  // 炮塔种类数
     std::vector<TowerButton*> tower;   // 炮塔按钮
     PlayerUI *myUI;   // UI界面
-    Player * me;
+
     QTimer * viewTimer;
     bool uiVisible;
     bool buttonVisible;

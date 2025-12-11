@@ -16,6 +16,12 @@ enum class MonsterType {
     MONSTER4   ///< 怪物类型4
 };
 
+enum class MonsterState{
+    MOVING,
+    ATTACKING,
+    DEAD
+};
+
 //怪物基类（纯虚函数，要有实例）
 class Monster : public QObject, public QGraphicsPixmapItem {//public QObject, public QGraphicsPixmapItem用于显示
     Q_OBJECT
@@ -23,9 +29,6 @@ class Monster : public QObject, public QGraphicsPixmapItem {//public QObject, pu
 public:
     // 修改构造函数，不需要传入路径，但需要传入Map指针
     Monster(MonsterType type,       // 怪物类型
-            float monsterHealth,    // 怪物初始生命值
-            float monsterSpeed,     // 怪物移动速度
-            int monsterGold,        // 怪物被击败时奖励的金币
             QGraphicsItem* parent = nullptr);
 
     virtual ~Monster();
@@ -39,10 +42,18 @@ public:
     bool isDead() const { return monsterHealth <= 0; }  // 判断怪物是否死亡
     void takeDamage(float damage);  // 怪物受到伤害
 
+    //攻击相关
+    void startAttack();
+    void stopAttack();
+    void performAttack(); // 执行攻击
+
     //获取器
     Vector2 getPosition() const { return monsterPosition; }  // 获取当前位置
     int getGold() const { return monsterGold; }  // 获取金币奖励
     float getHealth() const { return monsterHealth; }  // 获取当前生命值
+    float getAttackDamage()const {return attackDamage;} //获取怪物伤害
+    MonsterState getMonsterState()const {return currentState;} //获取当前状态
+    bool isAttackingCamp()const {return isAttacking;} //是否攻击
 
     // 获取怪物标准尺寸
     static QSize getMonsterSize() { return QSize(32, 32); }//一个格子的大小
@@ -50,7 +61,12 @@ public:
 signals:  //Qt的内容
     // 信号：怪物到达终点
     void reachedDestination();
-
+    // 信号：怪物开始攻击营地
+    void startedAttackingCamp();
+    // 信号：怪物停止攻击营地
+    void stoppedAttackingCamp();
+    // 信号：攻击营地，传递伤害值
+    void attackedCamp(int damage);
     // 信号：怪物死亡
     void died(int goldReward);
 
@@ -60,12 +76,14 @@ public slots:  //Qt的内容
 
 protected:
     // 纯虚函数：加载动画帧
-    void loadAnimationFrames();
+    virtual void loadAnimationFrames()=0;
+    virtual void loadAttackFrames()=0;
 
     void initializeTimers();        // 初始化动画和移动计时器
 
     // 怪物基础属性
     MonsterType type;               // 怪物类型标识
+    MonsterState currentState;      // 怪物当前状态
     float monsterHealth;            // 当前生命值
     float monsterSpeed;             // 移动速度（像素/秒）
     int monsterGold;                // 击败奖励金币
@@ -76,11 +94,42 @@ protected:
     int currentTargetIndex;         // 当前目标路径点索引
     bool reachedEnd;                // 是否已到达路径终点
 
-    // 动画系统相关
-    QVector<QPixmap> animationFrames;  // 动画帧图片集合
-    int currentFrameIndex;             // 当前动画帧索引
+    //攻击相关
+    float attackDamage;
+    bool isAttacking;
 
-private:
-    QTimer* animationTimer;    // 动画更新计时器
-    QTimer* moveTimer;         // 位置移动计时器
+    // 动画系统相关
+    QVector<QPixmap> animationFrames;  // 移动动画帧图片集合
+    QVector<QPixmap>attackFrames;      // 攻击动画帧集合
+    int currentFrameIndex;             // 当前动画帧索引
+    bool isAttackAnimation;            // 是否播放攻击动画
 };
+
+class Monster1:public Monster{
+    Q_OBJECT
+public:
+    Monster1(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+    virtual void loadAttackFrames()override;
+    };
+
+class Monster2:public Monster{
+    Q_OBJECT
+public:
+    Monster2(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+    virtual void loadAttackFrames()override;
+};
+
+class Monster3:public Monster{
+    Q_OBJECT
+public:
+    Monster3(QGraphicsItem* parent = nullptr);
+protected:
+    virtual void loadAnimationFrames()override;
+    virtual void loadAttackFrames()override;
+};
+
+

@@ -8,6 +8,7 @@
 #include "utils.h"
 #include <QDebug>
 
+
 Game::Game(QWidget *parent)
     : QWidget(parent),
     ui(new Ui::Game),
@@ -41,6 +42,47 @@ Game::Game(QWidget *parent)
     // 注释掉就不显示
     gMap->setShowGrid(true);
     //这里有bug，但是找不到
+    // 初始化怪物生成塔
+    monsterSpawner = new MonsterSpawnerTower();
+    scene->addItem(monsterSpawner);
+
+    // 连接怪物生成信号
+    connect(monsterSpawner, &MonsterSpawnerTower::monsterSpawned, this, [this](Monster* monster) {
+        scene->addItem(monster);
+        // 连接怪物攻击信号
+       // connect(monster, &Monster::attackedCamp, this, &Game::handleCampAttacked);
+
+        // 连接怪物开始攻击信号
+        connect(monster, &Monster::startedAttackingCamp, this, [monster]() {
+            qDebug() << "怪物开始攻击营地！";
+        });
+
+        // 连接怪物停止攻击信号
+        connect(monster, &Monster::stoppedAttackingCamp, this, [monster]() {
+            qDebug() << "怪物停止攻击营地！";
+        });
+
+        // 连接怪物死亡信号
+        connect(monster, &Monster::died, this, [this, monster](int gold) {
+            qDebug() << "怪物死亡，奖励金币：" << gold;
+            // 怪物会自动从场景中移除（在Monster::takeDamage中处理）
+        });
+
+        // 连接怪物到达终点信号
+        connect(monster, &Monster::reachedDestination, this, []() {
+            qDebug() << "怪物到达终点！";
+        });
+    });
+
+    // 连接波数更新信号
+    connect(monsterSpawner, &MonsterSpawnerTower::waveChanged, this, [](int wave) {
+        qDebug() << "当前波数：" << wave;
+    });
+
+    // 延迟1秒后开始生成怪物
+    QTimer::singleShot(1000, this, [this]() {
+        monsterSpawner->startSpawning();
+    });
 
     // 初始化炮塔按钮
     towerNum = 0;
@@ -81,11 +123,16 @@ Game::Game(QWidget *parent)
     connect(viewTimer, &QTimer::timeout, this, [&](){
         view->centerOn(me);
     });
-    viewTimer->start(SPEEDDELTA);
+    viewTimer->start(SPEEDDELTA); 
 }
+
+
+
 
 Game::~Game()
 {
+    monsterSpawner->stopSpawning();
+    delete monsterSpawner;
     delete gMap;
     if(gMap != NULL)  gMap = NULL;
     delete ui;
