@@ -19,10 +19,12 @@ class Bullet : public QObject, public QGraphicsItem
 {
     Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
-
 public:
-    Bullet(const Vector2& startPos, const Monster* target,
+    // 统一构造函数声明
+    Bullet(const Vector2& startPos, const Monster* target, TowerType towerType,
+           int towerLevel = 1,
            float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
+
     ~Bullet();
 
     QRectF boundingRect() const override;
@@ -38,17 +40,17 @@ public:
     const Monster* getTarget() const { return target; }
     float getDamage() { return damage_; }
     float getRotation() const { return rotation_; }
+    TowerType getTowerType() const { return towerType_; }
+    int getTowerLevel() const { return towerLevel_; }
 
     void startEffect();
     void setBulletPixmap(const QPixmap& pixmap);
     void setBulletPixmap(const QString& imagePath);
 
-
 public slots:
     void onUpdateTimer();
     void onFrameUpdate();
-
-private:
+protected:  // 改为protected，让派生类可以访问
     Vector2 position_;
     const Monster * target;
     float speed_;
@@ -57,17 +59,22 @@ private:
     bool hasHit_;
     float tolerance_;
     float rotation_;
+    TowerType towerType_;  // 只保留一个声明
+    int towerLevel_;
 
     QTimer* updateTimer_;
     QTimer* frameTimer_;
     QPixmap bulletPixmap_;
+    QVector<QPixmap> bulletFrames_;  // 添加动画帧容器
     int currentFrame_;
     int totalFrames_;
     QSize pixmapSize_;
 
     void loadDefaultPixmap();
+    void loadAnimatedPixmap(const QString& basePath, int frameCount);
+
     bool isAtTarget() const;
-    void hitTarget();
+    virtual void hitTarget();  // 改为虚函数
 
 signals:
     void hit(int damage);

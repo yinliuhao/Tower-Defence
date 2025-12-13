@@ -14,6 +14,7 @@
 #include <QColor>
 #include<QPointF>
 #include "utils.h"
+#include "bulletmanager.h"
 
 Tower::Tower(TowerType type)
     : towerType(type),
