@@ -2,14 +2,15 @@
 #pragma once
 #include <QPixmap>
 #include <QString>
-#include "bulletmanager.h"
 #include<QGraphicsPixmapItem>
 #include<QTimer>
 #include <QTransform>   // 用于图片旋转
 #include <QPointF>
+#include <structVector.h>
 
 class Monster;
 class Bullet;
+class BulletManager;
 
 enum class TowerType {
     TOWER1,

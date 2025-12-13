@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include "structVector.h"
 #include "monster.h"
+#include "tower.h"
 
 #define BULLET_SPEED 8.0f
 #define BULLET_DAMAGE 10.0f

@@ -10,11 +10,13 @@ class BulletManager : public QObject
 
 public:
     BulletManager(float speed, float damage, QObject* parent = nullptr);
-    ~BulletManager();
+    virtual ~BulletManager();  // 添加虚析构函数声明
 
-    // 创建子弹
-    Bullet* createBullet(const Vector2& startPos, const Monster* target,
-                    float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
+    // 修改createBullet函数，添加towerLevel参数
+    Bullet* createBullet(const Vector2& startPos, const Monster* target, TowerType towerType,
+                         int towerLevel = 1,  // 新增：炮塔等级
+                         float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
+
     // 更新所有子弹
     void updateBullets();
 

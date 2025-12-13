@@ -17,7 +17,7 @@
 
 Tower::Tower(TowerType type)
     : towerType(type),
-level(1),
+    level(1),
     isPlaced(false),
     isActive(false),
     attackTimer(new QTimer(this)),
@@ -35,6 +35,8 @@ level(1),
       buildCost =  TOWER1_BUILCOST;
       attackRange = TOWER1_ATTACKRANGE;
       attackInterval =  TOWER1_ATTACKINTERVAL;
+      bulletDamage = 10;  // 添加初始化
+      bulletSpeed = 8;    // 添加初始化
       loadPixmap(":/picture/tower/archer_level1.png");
       break;
     case TowerType::TOWER2:
@@ -42,6 +44,8 @@ level(1),
         buildCost =  TOWER2_BUILCOST;
         attackRange = TOWER2_ATTACKRANGE;
         attackInterval =  TOWER2_ATTACKINTERVAL;
+        bulletDamage = 15;  // 添加初始化
+        bulletSpeed = 10;   // 添加初始化
         loadPixmap(":/tower/tower2.png");
         break;
     case TowerType::TOWER3:
@@ -49,13 +53,17 @@ level(1),
         buildCost =  TOWER3_BUILCOST;
         attackRange = TOWER3_ATTACKRANGE;
         attackInterval =  TOWER3_ATTACKINTERVAL;
+        bulletDamage = 20;  // 添加初始化
+        bulletSpeed = 12;   // 添加初始化
         loadPixmap(":/tower/tower3.png");
         break;
     default:
         maxHealth = health = 0;
         buildCost =  0;
         attackRange = 0;
-        attackInterval = 0L;
+        attackInterval = 0;
+        bulletDamage = 0;   // 添加初始化
+        bulletSpeed = 0;    // 添加初始化
     }
 }
 
@@ -264,7 +272,9 @@ void Tower::fire(const Monster* target) const
         towerPixalCenter.y + dy * TILESIZE / 2
         );
 
-    manager->createBullet(startPos, target);
+    // 修正：只调用一次，传递所有必需的参数
+    manager->createBullet(startPos, target, towerType, level,
+                          bulletSpeed, bulletDamage, nullptr);
 }
 
 // --------------------------------------------------------

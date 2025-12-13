@@ -2,26 +2,35 @@
 #include <QGraphicsScene>
 #include <QDebug>
 #include <algorithm>
-
-BulletManager::BulletManager(float speed, float damage, QObject* parent)
-    : QObject(parent), bulletSpeed_(speed),bulletDamage_(damage)
-{
-}
-
+#include "areadamagebullet.h"  // 添加包含
+// 添加析构函数声明到头文件后，实现如下：
 BulletManager::~BulletManager()
 {
     clearAll();
 }
 
+// 修正createBullet函数调用
 Bullet* BulletManager::createBullet(const Vector2& fromPos, const Monster* target,
-                                    float speed, float damage, QGraphicsItem*)
+                                    TowerType towerType, int towerLevel,
+                                    float speed, float damage, QGraphicsItem* parent)
 {
     float actualSpeed = (speed > 0) ? speed : bulletSpeed_;
+    float actualDamage = (damage > 0) ? damage : bulletDamage_;
 
-    Bullet* bullet = new Bullet(fromPos, target, actualSpeed, damage);
+    Bullet* bullet = nullptr;
+
+    switch (towerType) {
+    case TowerType::TOWER3:
+        bullet = new AreaDamageBullet(fromPos, target, towerType, towerLevel,
+                                      actualSpeed, actualDamage, 150.0f, parent);
+        break;
+    default:
+        bullet = new Bullet(fromPos, target, towerType, towerLevel,
+                            actualSpeed, actualDamage, parent);
+        break;
+    }
+
     bullets_.push_back(bullet);
-
-    // 连接命中信号
     connect(bullet, &Bullet::hit, this, [this, bullet]() {
         emit bulletHit(bullet->getTarget(), bullet->getDamage());
         this->removeBullet(bullet);

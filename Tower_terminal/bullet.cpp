@@ -5,11 +5,13 @@
 #include <QGraphicsScene>
 #include <QDebug>
 #include "utils.h"
+#include "tower.h"
 
-
-Bullet::Bullet(const Vector2& startPos, const Monster* target,
-               float speed, float damage, QGraphicsItem* parent)
-    : QGraphicsItem(parent),
+// Bullet.cpp 中的构造函数修改
+Bullet::Bullet(const Vector2& startPos, const Monster* target, TowerType towerType,
+               int towerLevel, float speed, float damage, QGraphicsItem* parent)
+    : QObject(nullptr),  // 先初始化 QObject
+    QGraphicsItem(parent),  // 再初始化 QGraphicsItem
     position_(startPos),
     target(target),
     speed_(speed),
@@ -18,13 +20,17 @@ Bullet::Bullet(const Vector2& startPos, const Monster* target,
     hasHit_(false),
     tolerance_(BULLET_TOLERANCE),
     rotation_(90),
+    towerType_(towerType),
+    towerLevel_(towerLevel),
     currentFrame_(0),
     totalFrames_(1),
-    pixmapSize_(20, 10)  // 默认尺寸
+    pixmapSize_(20, 10)
 {
-    // 加载默认子弹图片
-    loadDefaultPixmap();
+    // 初始化指针为 nullptr
+    updateTimer_ = nullptr;
+    frameTimer_ = nullptr;
 
+    loadDefaultPixmap();
     setPos(QPointF(startPos.x, startPos.y));
     setZValue(BULLETZVALUE);
 
@@ -38,21 +44,59 @@ Bullet::Bullet(const Vector2& startPos, const Monster* target,
         frameTimer_->start(BULLET_FRAME_DELAY);
     }
 }
-
-void Bullet::loadDefaultPixmap()
+// 其他函数保持不变，但确保使用正确的成员变量名
+void Bullet::loadAnimatedPixmap(const QString& basePath, int frameCount)
 {
-    // 从资源文件加载图片
-    if (bulletPixmap_.load(":/images/bullet.png")) {
+    bulletFrames_.clear();  // 现在使用正确的成员变量
+    for (int i = 0; i < frameCount; ++i) {
+        QString framePath = QString("%1_%2.png").arg(basePath).arg(i);
+        QPixmap frame(framePath);
+        if (!frame.isNull()) {
+            bulletFrames_.append(frame);
+            qDebug() << "成功加载子弹帧：" << framePath;
+        } else {
+            qDebug() << "错误：无法加载子弹帧：" << framePath;
+            QPixmap defaultFrame(pixmapSize_);
+            defaultFrame.fill(QColor(255, 200, 0));
+            bulletFrames_.append(defaultFrame);
+        }
+    }
+    if (!bulletFrames_.isEmpty()) {
+        bulletPixmap_ = bulletFrames_.first();
         pixmapSize_ = bulletPixmap_.size();
-        qDebug() << "成功从资源文件加载子弹图片，尺寸：" << pixmapSize_;
-    } else {
-        qDebug() << "错误：无法从资源文件加载子弹图片！";
-        // 如果加载失败，创建一个空的透明图片
-        bulletPixmap_ = QPixmap(pixmapSize_);
-        bulletPixmap_.fill(Qt::transparent);
     }
 }
+void Bullet::loadDefaultPixmap()
+{
+    QString imagePath;
+    QString basePath;
 
+    switch(towerType_) {
+    case TowerType::TOWER1:  // 弓箭塔 - 只有一级，单帧
+        // 注意路径前缀是 :/picture/
+        imagePath = ":/picture/bullet/bullet_archer.png";
+        totalFrames_ = 1;
+        break;
+
+    case TowerType::TOWER2:  // 加农炮 - 三级，每级三帧动画
+        // 路径前缀是 :/picture/bullet/
+        basePath = QString(":/picture/bullet/bullet_cannon_lv%1").arg(towerLevel_);
+        totalFrames_ = 3;  // 每级都有3帧动画
+        break;
+
+    case TowerType::TOWER3:  // 迫击炮 - 三级，每级三帧动画
+        // 路径前缀是 :/picture/bullet/
+        basePath = QString(":/picture/bullet/bullet_mortar_lv%1").arg(towerLevel_);
+        totalFrames_ = 3;  // 每级都有3帧动画
+        break;
+
+    default:
+        imagePath = ":/picture/bullet/bullet_default.png";
+        totalFrames_ = 1;
+        break;
+    }
+
+}
 Bullet::~Bullet()
 {
     if (updateTimer_ && updateTimer_->isActive()) {
@@ -84,8 +128,15 @@ void Bullet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     painter->rotate(rotation_);
     painter->translate(-center);
 
-    // 绘制图片
-    painter->drawPixmap(0, 0, bulletPixmap_);
+    // 绘制图片（支持多帧动画）
+    if (!bulletFrames_.isEmpty() && totalFrames_ > 1) {
+        // 多帧动画
+        int frameIndex = currentFrame_ % bulletFrames_.size();
+        painter->drawPixmap(0, 0, bulletFrames_.at(frameIndex));
+    } else {
+        // 单帧图片
+        painter->drawPixmap(0, 0, bulletPixmap_);
+    }
 
     painter->restore();
 }
