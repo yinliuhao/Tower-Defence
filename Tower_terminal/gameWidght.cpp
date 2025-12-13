@@ -46,6 +46,47 @@ Game::Game(QWidget *parent)
     monsterSpawner = new MonsterSpawnerTower();
     scene->addItem(monsterSpawner);
 
+    // 初始化炮塔按钮
+    towerNum = 0;
+    tower.push_back(new TowerButton("archer", this));
+    towerNum++;
+    tower.push_back(new TowerButton("cannon", this));
+    towerNum++;
+    tower.push_back(new TowerButton("mortar", this));
+    towerNum++;
+
+    // 隐藏炮塔按钮
+    for(int i = 0; i < towerNum; i++)
+    {
+        tower[i]->move(width - BTNWIDTH, height - (towerNum - i) * BTNHEIGHT);
+    }
+    for(int i = 0; i < towerNum; i++)
+    {
+        tower[i]->hide();
+    }
+    buttonVisible = false;
+
+    // 初始化UI界面
+    myUI = new PlayerUI(this);
+
+    // 隐藏UI界面
+    myUI->move(width - myUI->getWidth(), 0);
+    myUI->hide();
+    uiVisible = false;
+
+    // 初始化玩家
+    me = new Player();  // 将地图指针传递给Player
+
+    // 显示玩家
+    scene->addItem(me);
+
+    // 玩家设置为视角中心
+    viewTimer = new QTimer(this);
+    connect(viewTimer, &QTimer::timeout, this, [&](){
+        view->centerOn(me);
+    });
+    viewTimer->start(10);
+
     // 连接怪物生成信号
     connect(monsterSpawner, &MonsterSpawnerTower::monsterSpawned, this, [this](Monster* monster) {
         scene->addItem(monster);
@@ -90,49 +131,14 @@ Game::Game(QWidget *parent)
     });
     resourceManager->initPicture();
 
-    // 初始化炮塔按钮
-    towerNum = 0;
-    tower.push_back(new TowerButton("archer", this));
-    towerNum++;
-    tower.push_back(new TowerButton("cannon", this));
-    towerNum++;
-    tower.push_back(new TowerButton("mortar", this));
-    towerNum++;
-
-    // 隐藏炮塔按钮
-    for(int i = 0; i < towerNum; i++)
+    for(int i = 0; i < resourceManager->getResourcesNum(); i++)
     {
-        tower[i]->move(width - BTNWIDTH, height - (towerNum - i) * BTNHEIGHT);
+        Resource * res = resourceManager->getResources(i);
+        connect(res, &Resource::resourceDepleted, myUI, [this, res](){
+            myUI->collectResource(res->getType());
+        });
     }
-    for(int i = 0; i < towerNum; i++)
-    {
-        tower[i]->hide();
-    }
-    buttonVisible = false;
-
-    // 初始化UI界面
-    myUI = new PlayerUI(this);
-
-    // 隐藏UI界面
-    myUI->move(width - myUI->getWidth(), 0);
-    myUI->hide();
-    uiVisible = false;
-
-    // 初始化玩家
-    me = new Player();  // 将地图指针传递给Player
-
-    // 显示玩家
-    scene->addItem(me);
-
-    // 玩家设置为视角中心
-    viewTimer = new QTimer(this);
-    connect(viewTimer, &QTimer::timeout, this, [&](){
-        view->centerOn(me);
-    });
-    viewTimer->start(10);
 }
-
-
 
 
 Game::~Game()
@@ -171,13 +177,13 @@ void Game::keyPressEvent(QKeyEvent *ev)
 
     if(me->getState() == PlayerState::WALKING && ev->key() == Qt::Key_Space)
     {
-        Resource * r = me->findNearbyResource();
+        Resource * r = me->getTarget();
         if(r != nullptr)
         {
             if(r->getType() == ResourceType::GRASS_TREE || r->getType() == ResourceType::SWAMP_TREE)
             {
                 me->setState(PlayerState::CUTTING);
-                if(r->getCenterPixal().y() < me->pos().y())
+                if(r->getCenterPixal().x() < me->pos().x())
                 {
                     me->setCutLeft(true);
                     me->setCutRight(false);
@@ -187,12 +193,13 @@ void Game::keyPressEvent(QKeyEvent *ev)
                     me->setCutLeft(false);
                     me->setCutRight(true);
                 }
+                return;
             }
 
             else
             {
                 me->setState(PlayerState::DIGGING);
-                if(r->getCenterPixal().y() < me->pos().y())
+                if(r->getCenterPixal().x() < me->pos().x())
                 {
                     me->setDigLeft(true);
                     me->setDigRight(false);
@@ -202,6 +209,7 @@ void Game::keyPressEvent(QKeyEvent *ev)
                     me->setDigLeft(false);
                     me->setDigRight(true);
                 }
+                return;
             }
         }
     }

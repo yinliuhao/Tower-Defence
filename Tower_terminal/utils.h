@@ -17,35 +17,25 @@
 #define BTNHEIGHT 107
 
 //UI
-#define INITMONEY 100
-#define INITCAMPHEALTH 100
-#define INITPLAYERHEALTH 100
+#define INITCAMPHEALTH 10
+#define INITPLAYERHEALTH 10
 #define INITWAVE 10
 #define INITWOOD 0
 #define INITSTONE 0
 #define INITBRONZE 0
 #define INITSILVER 0
 #define INITGOLD 0
+#define INITRESIN 0
 
-#define CAMPHEALTH 0
-#define PLAYERHEALTH 1
-#define MONEY 2
-#define WAVE 3
-#define WOOD 4
-#define STONE 5
-#define BRONZE 6
-#define SILVER 7
-#define GOLD 8
-
-#define BARWIDTH (5 * TILESIZE + BTNHEIGHT)
-#define BARHEIGHT (6 * TILESIZE)
+#define UIWIDTH (6 * TILESIZE + BTNHEIGHT)
+#define UIHEIGHT (8 * TILESIZE)
 #define DIGIT 2
-#define BARNUM 3
+#define BARNUM 8
 
 #define NUMWIDTH 27
 #define NUMHEIGHT 46
-#define STATUWIDTH 50
-#define STATUHEIGHT 50
+#define STATUWIDTH 48
+#define STATUHEIGHT 48
 
 #define STATUX 24
 #define STATUY 16
@@ -126,6 +116,7 @@
 #define CUT_FRAME_INTERVAL 100  //砍树100ms 一帧
 #define DIG_FRAME_INTERVAL 100  //采石100ms 一帧
 #define ROLLTIMES 1.5f  //每次按shift键人物翻滚效果圈数,可以控制滑行时间
+#define FIND_TARGET_INTERVAL 100
 
 //计时器——怪物
 #define MONSTERDELTA 150

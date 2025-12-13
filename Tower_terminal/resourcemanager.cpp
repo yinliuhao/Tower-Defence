@@ -85,3 +85,11 @@ Resource * ResourceManager::checkResource(QPoint checkPoint)
     }
     return nullptr;
 }
+
+Resource* ResourceManager::getResources(int i)
+{
+    if(i < (int)allResources.size())
+        return allResources[i];
+    else
+        return nullptr;
+}

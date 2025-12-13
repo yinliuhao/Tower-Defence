@@ -51,13 +51,15 @@ public:
 
     void updatePosition();
     void updatePicture();
+    void findNearbyResource();
 
     bool isWalking() { return state == PlayerState::WALKING; }
     bool isRolling() { return state == PlayerState::ROLLING; }
     bool isCutting() { return state == PlayerState::CUTTING; }
     bool isDigging() { return state == PlayerState::DIGGING; }
 
-    Resource* findNearbyResource() const;
+    Resource * getTarget() { return target; }
+
 
 protected:
     QRectF boundingRect() const override;
@@ -87,6 +89,7 @@ private:
 
     QTimer moveTimer;
     QTimer picTimer;   //控制图片切换
+    QTimer findTimer;
 
     bool walk_up = false;
     bool walk_down = false;
@@ -119,6 +122,8 @@ private:
     qreal roll_speed = ROLLSPEED;
 
     PlayerState state = PlayerState::WALKING;
+
+    Resource * target = nullptr;
 
 };
 

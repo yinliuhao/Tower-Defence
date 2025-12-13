@@ -1,6 +1,7 @@
 #include "playerUI.h"
 #include <qstring.h>
 #include "utils.h"
+#include <QRandomGenerator>
 
 //int值转换为vector
 std::vector<int> PlayerUI::itov(int value)
@@ -27,7 +28,7 @@ int PlayerUI::vtoi(const std::vector<int> out)
     return result;
 }
 
-void PlayerUI::add(int value, int index)
+void PlayerUI::add(int value, UiResource index)
 {
     switch(index)
     {
@@ -38,10 +39,6 @@ void PlayerUI::add(int value, int index)
     case PLAYERHEALTH:
         playerHealth += value;
         updateSglBar(PLAYERHEALTH);
-        break;
-    case MONEY:
-        money += value;
-        updateSglBar(MONEY);
         break;
     case WAVE:
         wave += value;
@@ -70,71 +67,72 @@ void PlayerUI::add(int value, int index)
     }
 }
 
-bool PlayerUI::sub(int value, int index)
+bool PlayerUI::sub(int value, UiResource index)
 {
-    switch(index)
+    if(index ==  CAMPHEALTH)
     {
-    case CAMPHEALTH:
-        campHealth -= value;
-        if(campHealth < 0)
+        if(campHealth <= value)
         {
             emit gameOver();
             return false;
         }
         else
         {
+            campHealth -= value;
             updateSglBar(CAMPHEALTH);
             emit campHurted();
         }
-        break;
-    case PLAYERHEALTH:
-        playerHealth -= value;
-        if(playerHealth < 0)
+    }
+    else if(index == PLAYERHEALTH)
+    {
+        if(playerHealth <= value)
         {
+
             emit gameOver();
             return false;
         }
         else
         {
-            updateSglBar(CAMPHEALTH);
+            playerHealth -= value;
+            updateSglBar(PLAYERHEALTH);
             emit playerHurted();
         }
-        break;
-    case MONEY:
-        money -= value;
-        if(money < 0) return false;
-        updateSglBar(MONEY);
-        break;
-    case WAVE:
+    }
+    else if(index == WAVE)
+    {
+        if(wave < value) return false;
         wave -= value;
-        if(wave < 0) return false;
         updateSglBar(WAVE);
-        break;
-    case WOOD:
+    }
+    else if(index == WOOD)
+    {
+        if(wood < value) return false;
         wood -= value;
-        if(wood < 0) return false;
         updateSglBar(WOOD);
-        break;
-    case STONE:
+    }
+    else if(index == STONE)
+    {
+        if(stone < value) return false;
         stone -= value;
-        if(stone < 0) return false;
         updateSglBar(STONE);
-        break;
-    case BRONZE:
+    }
+    else if(index == BRONZE)
+    {
         bronze -= value;
-        if(bronze < 0) return false;
+        if(bronze < value) return false;
         updateSglBar(BRONZE);
-        break;
-    case SILVER:
+    }
+    else if(index == SILVER)
+    {
+        if(silver < value) return false;
         silver -= value;
-        if(silver < 0) return false;
         updateSglBar(SILVER);
-        break;
-    case GOLD:
+    }
+    else if(index == GOLD)
+    {
+        if(gold < value) return false;
         gold -= value;
-        if(gold < 0) return false;
         updateSglBar(GOLD);
-        break;
     }
     return true;
 }
@@ -153,10 +151,15 @@ void PlayerUI::loadNumTextures()
 //存储状态（生命，金钱，波次）图片
 void PlayerUI::loadStatuTextures()
 {
-    statuTextures.resize(3);
-    statuTextures[0].load(":/picture/UI/palyerHealth.png");
-    statuTextures[1].load(":/picture/UI/money.png");
+    statuTextures.resize(statuBarNum);
+    statuTextures[0].load(":/picture/UI/campHealth.png");
+    statuTextures[1].load(":/picture/UI/playerHealth.png");
     statuTextures[2].load(":/picture/UI/wave.png");
+    statuTextures[3].load(":/picture/UI/wood.png");
+    statuTextures[4].load(":/picture/UI/bronze.png");
+    statuTextures[5].load(":/picture/UI/silver.png");
+    statuTextures[6].load(":/picture/UI/gold.png");
+    statuTextures[7].load(":/picture/UI/stone.png");
 }
 
 //存储UI边框图片
@@ -167,6 +170,7 @@ void PlayerUI::loadFrame()
     frame->setPixmap(picFrame);
     frame->setFixedSize(width, height);
     frame->setScaledContents(true);
+    frame->raise();
 }
 
 //初始化整个UI界面
@@ -182,7 +186,7 @@ void PlayerUI::initStatusBar(int numWid, int numHei, int statuWid, int statuHei)
     loadStatuTextures();
 
     statusBar.resize(statuBarNum);
-    for(int i = 0; i < statuBarNum; i++)
+    for(int i = 0; i < statuBarNum / 2; i++)
     {
         statusBar[i].resize(maxDig + 1);
         QLabel* statu = new QLabel(this);
@@ -202,22 +206,58 @@ void PlayerUI::initStatusBar(int numWid, int numHei, int statuWid, int statuHei)
             statusBar[i][j + 1]->move(NUMX + NUMGAPX * j, NUMY + GAPY * i);
         }
     }
+
+    for(int i = statuBarNum / 2; i < statuBarNum; i++)
+    {
+        statusBar[i].resize(maxDig + 1);
+        QLabel* statu = new QLabel(this);
+        statu->setPixmap(statuTextures[i]);
+        statu->setFixedSize(statuWid, statuHei);
+        statu->setScaledContents(true);
+        statusBar[i][0] = statu;
+        statusBar[i][0]->move(UIWIDTH / 2.0, STATUY + GAPY * (i - statuBarNum / 2));
+
+        for (int j = 0; j < maxDig; ++j)
+        {
+            QLabel* lbl = new QLabel(this);
+            lbl->setPixmap(numTextures[0]);
+            lbl->setFixedSize(numWid, numHei);
+            lbl->setScaledContents(true);
+            statusBar[i][j + 1] = lbl;
+            statusBar[i][j + 1]->move(UIWIDTH / 2.0 + NUMX - STATUX + NUMGAPX * j, NUMY + GAPY * (i - statuBarNum / 2));
+        }
+    }
 }
 
 //将单个状态栏的显示数据与内存数据同步
-void PlayerUI::updateSglBar(int index)
+void PlayerUI::updateSglBar(UiResource index)
 {
     std::vector<int> result;
     switch(index)
     {
-    case 1:
+    case CAMPHEALTH:
         result = itov(campHealth);
         break;
-    case 2:
-        result = itov(money);
+    case PLAYERHEALTH:
+        result = itov(playerHealth);
         break;
-    case 3:
+    case WAVE:
         result = itov(wave);
+        break;
+    case WOOD:
+        result = itov(wood);
+        break;
+    case STONE:
+        result = itov(stone);
+        break;
+    case BRONZE:
+        result = itov(bronze);
+        break;
+    case SILVER:
+        result = itov(silver);
+        break;
+    case GOLD:
+        result = itov(gold);
         break;
     }
 
@@ -232,14 +272,18 @@ void PlayerUI::updateSglBar(int index)
 void PlayerUI::updateUI()
 {
     updateSglBar(CAMPHEALTH);
-    updateSglBar(MONEY);
+    updateSglBar(PLAYERHEALTH);
     updateSglBar(WAVE);
+    updateSglBar(STONE);
+    updateSglBar(WOOD);
+    updateSglBar(GOLD);
+    updateSglBar(SILVER);
+    updateSglBar(BRONZE);
 }
 
 PlayerUI::PlayerUI(QWidget *parent)
     : QWidget{parent},
     statuBarNum(BARNUM),
-    money(INITMONEY),
     campHealth(INITCAMPHEALTH),
     playerHealth(INITPLAYERHEALTH),
     wave(INITWAVE),
@@ -248,8 +292,8 @@ PlayerUI::PlayerUI(QWidget *parent)
     bronze(INITBRONZE),
     silver(INITSILVER),
     gold(INITGOLD),
-    width(BARWIDTH),
-    height(BARHEIGHT),
+    width(UIWIDTH),
+    height(UIHEIGHT),
     maxDig(DIGIT)
 {
     //初始化数值上限
@@ -263,4 +307,111 @@ PlayerUI::PlayerUI(QWidget *parent)
     this->setFixedSize(width, height);
     initStatusBar(NUMWIDTH, NUMHEIGHT, STATUWIDTH, STATUHEIGHT);
     this->setStyleSheet("QWidget { background-color: black; }");
+
+    updateUI();
+}
+
+void PlayerUI::collectResource(ResourceType type)
+{
+    QRandomGenerator* random = QRandomGenerator::global();
+    int result;
+    if(type == ResourceType::GRASS_TREE)
+    {
+        result = random->bounded(100);
+        if(result  >= 0 && result < 60)
+            add(2, WOOD);
+        else if(result >= 60 && result < 90)
+            add(3, WOOD);
+        else if(result >= 90)
+            add(4, WOOD);
+    }
+    else if(type == ResourceType::SWAMP_TREE)
+    {
+        result = random->bounded(100);
+        if(result >= 0 && result < 10)
+            add(1, WOOD);
+        else if(result  >= 10 && result < 80)
+            add(2, WOOD);
+        else if(result >= 80 && result < 95)
+            add(3, WOOD);
+        else if(result >= 95)
+            add(4, WOOD);
+    }
+    else if(type == ResourceType::GRASS_STONE)
+    {
+        result = random->bounded(100);
+        if(result >= 0 && result < 60)
+            add(2, STONE);
+        else if(result  >= 60 && result < 80)
+            add(3, STONE);
+        else if(result >= 80 && result < 90)
+        {
+            add(2, WOOD);
+            add(1, BRONZE);
+        }
+        else if(result >= 90 && result < 96)
+        {
+            add(2, WOOD);
+            add(1, SILVER);
+        }
+        else if(result >= 96)
+        {
+            add(2, WOOD);
+            add(1, GOLD);
+        }
+    }
+    else if(type == ResourceType::SNOW_STONE)
+    {
+        result = random->bounded(100);
+        if(result >= 0 && result < 50)
+            add(2, STONE);
+        else if(result  >= 50 && result < 70)
+            add(3, STONE);
+        else if(result >= 70 && result < 90)
+        {
+            add(4, WOOD);
+        }
+        else if(result >= 90 && result < 94)
+        {
+            add(2, WOOD);
+            add(1, BRONZE);
+        }
+        else if(result >= 94 && result < 97)
+        {
+            add(2, WOOD);
+            add(1, SILVER);
+        }
+        else if(result >= 97 && result < 100)
+        {
+            add(2, WOOD);
+            add(1, GOLD);
+        }
+    }
+    else if(type == ResourceType::SWAMP_STONE)
+    {
+        result = random->bounded(100);
+        if(result >= 0 && result < 50)
+            add(2, STONE);
+        else if(result  >= 50 && result < 60)
+            add(3, STONE);
+        else if(result >= 60 && result < 65)
+        {
+            add(4, WOOD);
+        }
+        else if(result >= 65 && result < 80)
+        {
+            add(2, WOOD);
+            add(1, BRONZE);
+        }
+        else if(result >= 80 && result < 92)
+        {
+            add(2, WOOD);
+            add(1, SILVER);
+        }
+        else if(result >= 92 && result < 100)
+        {
+            add(2, WOOD);
+            add(1, GOLD);
+        }
+    }
 }

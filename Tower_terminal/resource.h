@@ -33,7 +33,7 @@ public:
     ResourceType getType() { return type; }
 
 signals:
-    void resourceDepleted(Resource* r);
+    void resourceDepleted(Resource * r);
 
 protected slots:
     virtual void respawn();

@@ -5,6 +5,20 @@
 #include <vector>
 #include <qlabel.h>
 #include <qpixmap.h>
+#include "resource.h"
+
+enum UiResource
+{
+    CAMPHEALTH = 0,
+    PLAYERHEALTH = 1,
+    WAVE = 2,
+    WOOD = 3,
+    BRONZE = 4,
+    SILVER = 5,
+    GOLD = 6,
+    STONE = 7,
+};
+
 
 class PlayerUI : public QWidget
 {
@@ -16,27 +30,30 @@ public:
     int getHeight()  {return height;}
     std::vector<int> itov(int value);
     int vtoi(const std::vector<int> out);
-    void add(int value, int index);
-    bool sub(int value, int index);
+    void add(int value, UiResource index);
+    bool sub(int value, UiResource index);
     void initStatusBar(int numWid, int numHei, int statuWid, int statuHei);
     void loadStatuTextures();
     void loadNumTextures();
-    void updateSglBar(int index);
+    void updateSglBar(UiResource index);
     void updateUI();
     void loadFrame();
+
+public slots:
+    void collectResource(ResourceType type);
 
 private:
     int statuBarNum;  //状态栏数目
 
-    int money;  //金钱
     int campHealth;  //基地生命
     int playerHealth;   //玩家生命
     int wave;   //波次
-    int wood;
-    int stone;
-    int bronze;
-    int silver;
-    int gold;
+    int wood;   //木材数量
+    int stone;   //石材数量
+    int bronze;  //铜锭数量
+    int silver;  //银锭数量
+    int gold;   //金锭数量
+    int resin;  //树脂数量
 
     int width;  //UI宽度
     int height;  //UI高度

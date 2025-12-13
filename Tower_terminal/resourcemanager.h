@@ -14,7 +14,10 @@ public:
 
     void initPicture();
 
-    Resource * checkResource(QPoint checkPoint);
+    Resource* checkResource(QPoint checkPoint);
+
+    Resource* getResources(int i);
+    int getResourcesNum() { return (int)allResources.size(); }
 
 private slots:
     void onResourceDepleted(Resource* r);

@@ -23,11 +23,16 @@ Player::Player()
 
     //处理玩家移动速度
     moveTimer.setInterval(POSITION_DELTA);
-    moveTimer.start();
     connect(&moveTimer, &QTimer::timeout, this, [&](){
         updatePosition();
     });
     moveTimer.start();
+
+    findTimer.setInterval(FIND_TARGET_INTERVAL);
+    connect(&findTimer, &QTimer::timeout, this, [&](){
+        findNearbyResource();
+    });
+    findTimer.start();
 }
 
 //更新图像函数
@@ -75,7 +80,7 @@ void Player::updatePicture()
             }
         }
     }
-    else if(state == PlayerState::CUTTING)
+    else if(target != nullptr && state == PlayerState::CUTTING)
     {
         if(cut_left)  isCuttingLeft = true;
         if(cut_right)  isCuttingLeft = false;
@@ -95,13 +100,12 @@ void Player::updatePicture()
             if(cutIndex >= 3)
             {
                 cutIndex = -1;
-                Resource * r = findNearbyResource();
-                r->takeDamage();
+                target->takeDamage();
                 state = PlayerState::WALKING;
             }
         }
     }
-    else if(state == PlayerState::DIGGING)
+    else if(target != nullptr && state == PlayerState::DIGGING)
     {
         if(dig_left)  isDiggingLeft = true;
         if(dig_right)  isDiggingLeft = false;
@@ -121,8 +125,7 @@ void Player::updatePicture()
             if(digIndex >= 3)
             {
                 digIndex = -1;
-                Resource * r = findNearbyResource();
-                r->takeDamage();
+                target->takeDamage();
                 state = PlayerState::WALKING;
             }
         }
@@ -188,8 +191,9 @@ void Player::updatePosition()
     setPos(newPos);
 }
 
-Resource* Player::findNearbyResource() const
+void Player::findNearbyResource()
 {
+    if (state != PlayerState::WALKING) return;
     QPointF center = pos() + QPointF(PLAYERWIDTH / 2, PLAYERHEIGHT / 2);
     QPoint grid = gMap->pixelToGrid(center);
 
@@ -197,14 +201,30 @@ Resource* Player::findNearbyResource() const
         {0, 0}, {0, 1}, {0, -1}
     };
 
+    Resource* r;
     for (const QPoint& d : dirs)
     {
         QPoint checkGrid = grid + d;
-        Resource* r = resourceManager->checkResource(checkGrid);
+        r = resourceManager->checkResource(checkGrid);
         if (r && !r->isDead())
-            return r;
+        {
+            if(target != nullptr && target != r)
+            {
+                target->setSelected(false);
+                target->update();
+            }
+            target = r;
+            target->setSelected(true);
+            target->update();
+            return;
+        }
     }
-    return nullptr;
+    if(target != nullptr && target != r)
+    {
+        target->setSelected(false);
+        target->update();
+    }
+    target = nullptr;
 }
 
 QRectF Player::boundingRect() const
