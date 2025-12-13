@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "towerButton.h"
+#include "resourcemanager.h"
 #include "playerUI.h"
 #include <vector>
 #include <QGraphicsView>
@@ -10,6 +11,7 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QTime>
+
 namespace Ui {
 class Game;
 }

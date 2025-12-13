@@ -72,7 +72,15 @@ public:
     // 绘制相关（可选，用于调试）
     void setShowGrid(bool show);
 
+    //公开数据
     std::vector<QPointF> monsterPath;  // 生成的怪物路径
+    std::vector<QPointF> monsterHome;
+    std::vector<QPoint> playerHome;
+    std::vector<QPoint> grassStone;
+    std::vector<QPoint> swampStone;
+    std::vector<QPoint> snowStone;
+    std::vector<QPoint> grassTree;
+    std::vector<QPoint> swampTree;
     std::vector<std::vector<TileState>> tileState;
     std::vector<std::vector<TileLayer>> tileLayer;
 

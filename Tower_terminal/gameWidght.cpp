@@ -84,6 +84,12 @@ Game::Game(QWidget *parent)
         monsterSpawner->startSpawning();
     });
 
+    resourceManager = new ResourceManager();
+    connect(resourceManager, &ResourceManager::resourceAdded, this, [this](Resource* r){
+        scene->addItem(r);
+    });
+    resourceManager->initPicture();
+
     // 初始化炮塔按钮
     towerNum = 0;
     tower.push_back(new TowerButton("archer", this));
@@ -123,7 +129,7 @@ Game::Game(QWidget *parent)
     connect(viewTimer, &QTimer::timeout, this, [&](){
         view->centerOn(me);
     });
-    viewTimer->start(SPEEDDELTA); 
+    viewTimer->start(10);
 }
 
 
@@ -141,25 +147,68 @@ Game::~Game()
 void Game::keyPressEvent(QKeyEvent *ev)
 {
     if (!me) return;
-    if(me->isRolling()) return;
 
     if (ev->key() == Qt::Key_W){
-        me->setMoveUp(true);
+        me->setWalkUp(true);
     }
     if (ev->key() == Qt::Key_S){
-        me->setMoveDown(true);
+        me->setWalkDown(true);
     }
     if (ev->key() == Qt::Key_A){
-        me->setMoveLeft(true);
+        me->setWalkLeft(true);
     }
     if (ev->key() == Qt::Key_D){
-        me->setMoveRight(true);
+        me->setWalkRight(true);
     }
 
-    if(ev->key() == Qt::Key_Shift) emit me->rolling();
+    if(ev->key() == Qt::Key_Shift){
+        me->setState(PlayerState::ROLLING);
+        me->setRollUp(me->getWalkUp());
+        me->setRollDown(me->getWalkDown());
+        me->setRollLeft(me->getWalkLeft());
+        me->setRollRight(me->getWalkRight());
+    }
+
+    if(me->getState() == PlayerState::WALKING && ev->key() == Qt::Key_Space)
+    {
+        Resource * r = me->findNearbyResource();
+        if(r != nullptr)
+        {
+            if(r->getType() == ResourceType::GRASS_TREE || r->getType() == ResourceType::SWAMP_TREE)
+            {
+                me->setState(PlayerState::CUTTING);
+                if(r->getCenterPixal().y() < me->pos().y())
+                {
+                    me->setCutLeft(true);
+                    me->setCutRight(false);
+                }
+                else
+                {
+                    me->setCutLeft(false);
+                    me->setCutRight(true);
+                }
+            }
+
+            else
+            {
+                me->setState(PlayerState::DIGGING);
+                if(r->getCenterPixal().y() < me->pos().y())
+                {
+                    me->setDigLeft(true);
+                    me->setDigRight(false);
+                }
+                else
+                {
+                    me->setDigLeft(false);
+                    me->setDigRight(true);
+                }
+            }
+        }
+    }
 
     QWidget::keyPressEvent(ev);
 }
+
 
 void Game::keyReleaseEvent(QKeyEvent *ev)
 {
@@ -193,22 +242,22 @@ void Game::keyReleaseEvent(QKeyEvent *ev)
                 tower[i]->hide();
             }
         }
+        return;
     }
 
     if (!me) return;
-    if(me->isRolling()) return;
 
     if (ev->key() == Qt::Key_W){
-        me->setMoveUp(false);
+        me->setWalkUp(false);
     }
     if (ev->key() == Qt::Key_S){
-        me->setMoveDown(false);
+        me->setWalkDown(false);
     }
     if (ev->key() == Qt::Key_A){
-        me->setMoveLeft(false);
+        me->setWalkLeft(false);
     }
     if (ev->key() == Qt::Key_D){
-        me->setMoveRight(false);
+        me->setWalkRight(false);
     }
     QWidget::keyReleaseEvent(ev);
 }

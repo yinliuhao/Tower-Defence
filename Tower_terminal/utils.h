@@ -61,12 +61,12 @@
 #define BULLETZVALUE 10
 #define MONSTERZVALUE 5
 #define PLAYERZVALUE 5
-#define SOURCEZVALUE -10
+#define RESOURCEZVALUE -5
 
 //玩家
 #define PLAYERWIDTH TILESIZE
 #define PLAYERHEIGHT TILESIZE
-#define PLAYERSPEED 150.0
+#define WALKSPEED 150.0
 #define ROLLSPEED 500.0
 
 //怪物
@@ -114,11 +114,18 @@
 #define TOWER3_ATTACKRANGE 150
 #define TOWER3_ATTACKINTERVAL 800
 
+//资源
+#define BIG_STONE_TIME 60
+#define TREE_TIME 40
+
 //计时器——玩家
-#define SPEEDDELTA 8   //玩家位置更新间隔 单位：ms
-#define WAKEDELTA 80   //玩家行走动画更新间隔
-#define ROLLDELTA 15   //玩家翻滚动画更新间隔
-#define ROLLTIMES 3  //每次按shift键人物翻滚效果圈数
+#define POSITION_DELTA 8   //玩家位置更新间隔 单位：ms
+#define PICTURE_DELTA 5    //玩家动画更新间隔 单位：ms
+#define WALK_FRAME_INTERVAL 80  // 行走80ms 一帧
+#define ROLL_FRAME_INTERVAL 50   // 滑行50ms 一帧
+#define CUT_FRAME_INTERVAL 100  //砍树100ms 一帧
+#define DIG_FRAME_INTERVAL 100  //采石100ms 一帧
+#define ROLLTIMES 1.5f  //每次按shift键人物翻滚效果圈数,可以控制滑行时间
 
 //计时器——怪物
 #define MONSTERDELTA 150

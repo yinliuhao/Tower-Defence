@@ -65,9 +65,104 @@ void Map::initializeTileData()
     ifs2.close();
 
     monsterPath.resize(19);
-    monsterPath = {QPointF(4, 6), QPointF(14, 6), QPointF(14, 21), QPointF(9, 21), QPointF(9, 32), QPointF(20, 32),
-                   QPointF(20, 22), QPointF(27, 22), QPointF(27, 8), QPointF(23, 8), QPointF(23, 31), QPointF(31, 31),
-                   QPointF(31, 40), QPointF(23, 40), QPointF(23, 46), QPointF(20, 46), QPointF(17, 46), QPointF(17, 47), QPointF(7, 47)};
+    monsterPath = {QPointF(4, 6),
+                   QPointF(14, 6),
+                   QPointF(14, 21),
+                   QPointF(9, 21),
+                   QPointF(9, 32), // 5
+                   QPointF(20, 32),
+                   QPointF(20, 22),
+                   QPointF(27, 22),
+                   QPointF(27, 8),
+                   QPointF(23, 8), //10
+                   QPointF(23, 31),
+                   QPointF(31, 31),
+                   QPointF(31, 40),
+                   QPointF(23, 40),
+                   QPointF(23, 46), //15
+                   QPointF(20, 46),
+                   QPointF(17, 46),
+                   QPointF(17, 47),
+                   QPointF(7, 47)};
+
+    monsterHome.resize(4);
+    monsterHome = {QPoint(3, 5),
+                   QPoint(5, 54),
+                   QPoint(11, 76),
+                   QPoint(54, 84)};
+
+    playerHome.resize(1);
+    playerHome = {QPoint(6, 47)};
+
+    grassStone.resize(6);
+    grassStone = {QPoint(7, 25),
+                  QPoint(15, 21),
+                  QPoint(19, 5),
+                  QPoint(18, 39),
+                  QPoint(18, 52),
+                  QPoint(34, 29)};
+
+    swampStone.resize(5);
+    swampStone = {QPoint(38, 12),
+                  QPoint(46, 8),
+                  QPoint(38, 31),
+                  QPoint(44, 23),
+                  QPoint(55, 50)};
+
+    snowStone.resize(4);
+    snowStone = {QPoint(5, 60),
+                 QPoint(6, 86),
+                 QPoint(13, 70),
+                 QPoint(21, 73)};
+
+    grassTree.resize(26);
+    grassTree = {QPoint(7, 3),
+                 QPoint(9, 5),
+                 QPoint(12, 3),
+                 QPoint(19, 3),
+                 QPoint(30, 3), // 5
+                 QPoint(26, 5),
+                 QPoint(30, 8),
+                 QPoint(15, 10),
+                 QPoint(32, 15),
+                 QPoint(31, 17), // 10
+                 QPoint(17, 19),
+                 QPoint(18, 20),
+                 QPoint(17, 22),
+                 QPoint(3, 18),
+                 QPoint(3, 28), // 15
+                 QPoint(2, 32),
+                 QPoint(21, 27),
+                 QPoint(20, 29),
+                 QPoint(23, 30),
+                 QPoint(32, 29), // 20
+                 QPoint(16, 33),
+                 QPoint(7, 40),
+                 QPoint(16, 38),
+                 QPoint(20, 40),
+                 QPoint(26, 39), // 25
+                 QPoint(32, 38)};
+
+    swampTree.resize(19);
+    swampTree = {QPoint(37, 7),
+                 QPoint(45, 1),
+                 QPoint(50, 3),
+                 QPoint(57, 2),
+                 QPoint(41, 10), // 5
+                 QPoint(54, 9),
+                 QPoint(40, 16),
+                 QPoint(47, 14),
+                 QPoint(54, 16),
+                 QPoint(57, 16), // 10
+                 QPoint(46, 23),
+                 QPoint(40, 30),
+                 QPoint(54, 33),
+                 QPoint(48, 38),
+                 QPoint(37, 43), // 15
+                 QPoint(42, 45),
+                 QPoint(55, 46),
+                 QPoint(44, 50),
+                 QPoint(56, 55)};
 }
 
 //注意！！！像素的原点为左上点，x轴为从左到右，y轴为从上到下
@@ -188,7 +283,7 @@ void Map::setEndPoint(int gridX, int gridY) {
 
 void Map::initpic()
 {
-    background.load(QString(":/picture/map/map.png"));
+    background.load(QString(":/picture/map/map0.png"));
 }
 
 QRectF Map::boundingRect() const

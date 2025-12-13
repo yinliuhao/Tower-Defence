@@ -20,6 +20,8 @@ SOURCES += \
     monsterSpawner.cpp \
     player.cpp \
     playerUI.cpp \
+    resource.cpp \
+    resourcemanager.cpp \
     tower.cpp \
     towerButton.cpp \
     utils.cpp \
@@ -35,6 +37,8 @@ HEADERS += \
     monsterSpawner.h \
     player.h \
     playerUI.h \
+    resource.h \
+    resourcemanager.h \
     structVector.h \
     tower.h \
     towerButton.h \

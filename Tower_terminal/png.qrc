@@ -23,7 +23,6 @@
         <file>player/rolling/2.png</file>
         <file>player/rolling/3.png</file>
         <file>player/rolling/4.png</file>
-        <file>map/map.png</file>
         <file>towerButton/archer.png</file>
         <file>towerButton/cannon.png</file>
         <file>towerButton/lack_archer.png</file>
@@ -33,7 +32,6 @@
         <file>towerButton/select_archer.png</file>
         <file>towerButton/select_cannon.png</file>
         <file>towerButton/select_mortar.png</file>
-        <file>tower/archer.png</file>
         <file>monster2/(1).png</file>
         <file>monster2/(2).png</file>
         <file>monster2/(3).png</file>
@@ -105,5 +103,46 @@
         <file>UI/silver.png</file>
         <file>UI/stone.png</file>
         <file>UI/wood.png</file>
+        <file>map/map0.png</file>
+        <file>player/cutting/1.png</file>
+        <file>player/cutting/2.png</file>
+        <file>player/cutting/3.png</file>
+        <file>player/cutting/4.png</file>
+        <file>player/digging/1.png</file>
+        <file>player/digging/2.png</file>
+        <file>player/digging/3.png</file>
+        <file>player/digging/4.png</file>
+        <file>resource/grass_rock_1.png</file>
+        <file>resource/grass_rock_2.png</file>
+        <file>resource/grass_rock_3.png</file>
+        <file>resource/grass_rock_highlight_1.png</file>
+        <file>resource/grass_rock_highlight_2.png</file>
+        <file>resource/grass_rock_highlight_3.png</file>
+        <file>resource/snow_rock_1.png</file>
+        <file>resource/snow_rock_2.png</file>
+        <file>resource/snow_rock_3.png</file>
+        <file>resource/snow_rock_4.png</file>
+        <file>resource/snow_rock_highlight_1.png</file>
+        <file>resource/snow_rock_highlight_2.png</file>
+        <file>resource/snow_rock_highlight_3.png</file>
+        <file>resource/swamp_rock_1.png</file>
+        <file>resource/swamp_rock_3.png</file>
+        <file>resource/swamp_rock_4.png</file>
+        <file>resource/swamp_rock_highlight_1.png</file>
+        <file>resource/swamp_rock_highlight_2.png</file>
+        <file>resource/swamp_rock_highlight_3.png</file>
+        <file>resource/grass_rock_highlight_4.png</file>
+        <file>resource/snow_rock_highlight_4.png</file>
+        <file>resource/swamp_rock_highlight_4.png</file>
+        <file>resource/grass_tree_1.png</file>
+        <file>resource/grass_tree_2.png</file>
+        <file>resource/grass_tree_highlight_1.png</file>
+        <file>resource/swamp_rock_2.png</file>
+        <file>resource/swamp_tree_1.png</file>
+        <file>resource/swamp_tree_highlight_1.png</file>
+        <file>resource/swamp_tree_highlight_2.png</file>
+        <file>resource/grass_tree_highlight_2.png</file>
+        <file>resource/swamp_tree_2.png</file>
+        <file>resource/grass_rock_4.png</file>
     </qresource>
 </RCC>

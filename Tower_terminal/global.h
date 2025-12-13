@@ -5,9 +5,11 @@
 #include "monsterSpawner.h"
 #include "monster.h"
 #include "player.h"
+#include "resourcemanager.h"
 
 extern Map* gMap;   //  只声明，不定义！
 extern MonsterSpawnerTower* monsterSpawner;//怪物生成器
+extern ResourceManager * resourceManager;
 extern Player * me;
 
 #endif

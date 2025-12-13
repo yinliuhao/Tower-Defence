@@ -35,7 +35,7 @@ level(1),
       buildCost =  TOWER1_BUILCOST;
       attackRange = TOWER1_ATTACKRANGE;
       attackInterval =  TOWER1_ATTACKINTERVAL;
-      loadPixmap(":/tower/tower1.png");
+      loadPixmap(":/picture/tower/archer_level1.png");
       break;
     case TowerType::TOWER2:
         maxHealth = health = TOWER2_MAHEALTH;
@@ -111,7 +111,7 @@ void Tower::upgrade()
     switch(towerType)
     {
     case TowerType::TOWER1:
-        loadPixmap(":/tower/tower1.png");
+        loadPixmap(QString(":/picture/tower/tower1_level1.png"));
         break;
     case TowerType::TOWER2:
         loadPixmap(":/tower/tower2.png");

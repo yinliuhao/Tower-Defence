@@ -4,6 +4,8 @@
 #include <QTransform>
 #include "utils.h"
 #include "global.h"
+#include "resource.h"
+#include "resourcemanager.h"
 
 Player::Player()
 {
@@ -13,68 +15,152 @@ Player::Player()
     setPos(WIDTH / 2.0, HEIGHT / 2.0);
 
     //处理人物行走图片帧变化
-    walkTimer.setInterval(WAKEDELTA);
-    connect(&walkTimer, &QTimer::timeout, this, [this](){
-        if(m_up || m_down || m_left || m_right)
-        {
-            if(m_left)
-            {
-                isGoingLeft = true;
-            }
-            if(m_right)
-            {
-                isGoingLeft = false;
-            }
-            nowIndex = (nowIndex + 1) % 4;
-            update();
-        }
-        else
-        {
-            nowIndex = 0;
-            update();
-        }
+    picTimer.setInterval(PICTURE_DELTA);
+    connect(&picTimer, &QTimer::timeout, this, [&](){
+        updatePicture();
     });
-    walkTimer.start();
+    picTimer.start();
 
     //处理玩家移动速度
-    moveTimer.setInterval(SPEEDDELTA);
+    moveTimer.setInterval(POSITION_DELTA);
     moveTimer.start();
     connect(&moveTimer, &QTimer::timeout, this, [&](){
-        updatePosition(me_speed, SPEEDDELTA);
+        updatePosition();
     });
-
-    //处理玩家翻滚速度及图片帧变化
-    rollTimer.setInterval(ROLLDELTA);
-    connect(this, &Player::rolling, this, [&](){
-        if(!m_up && !m_down && !m_left && !m_right) return;
-        walkTimer.stop();
-        moveTimer.stop();
-        rollTimer.start();
-    });
-
-    connect(&rollTimer, &QTimer::timeout, this, [&](){
-        ++rollingCount;
-        update();
-        updatePosition(ROLLSPEED, ROLLDELTA);
-        if(rollingCount >= 4 * ROLLTIMES)
-        {
-            rollingCount = 0;
-            walkTimer.start();
-            moveTimer.start();
-            rollTimer.stop();
-        }
-    });
+    moveTimer.start();
 }
 
-//改变人物实时前进方向
-void Player::setMoveUp(bool on)    { m_up = on; }
-void Player::setMoveDown(bool on)  { m_down = on; }
-void Player::setMoveLeft(bool on)  { m_left = on; }
-void Player::setMoveRight(bool on) { m_right = on; }
+//更新图像函数
+void Player::updatePicture()
+{
+    if(state == PlayerState::WALKING)
+    {
+        if(walk_left)  isWalkingLeft = true;
+        if(walk_right)  isWalkingLeft = false;
+        if(!walk_up && !walk_down && !walk_left && !walk_right)
+        {
+            walkIndex = 0;
+            update();
+            return;
+        }
+        walkFrameCounter += PICTURE_DELTA;
+        if(walkFrameCounter >= WALK_FRAME_INTERVAL)
+        {
+            walkFrameCounter = 0;
+            walkIndex = (walkIndex + 1) % 4;
+            update();
+        }
+    }
+    else if(state == PlayerState::ROLLING)
+    {
+        if(roll_left)  isRollingLeft = true;
+        if(roll_right)  isRollingLeft = false;
+        if(!roll_up && !roll_down && !roll_left && !roll_right)
+        {
+            rollIndex = 0;
+            state = PlayerState::WALKING;
+            update();
+            return;
+        }
+        rollFrameCounter += PICTURE_DELTA;
+        if(rollFrameCounter >= ROLL_FRAME_INTERVAL)
+        {
+            rollFrameCounter = 0;
+            ++rollIndex;
+            update();
+            if(rollIndex >= 4 * ROLLTIMES)
+            {
+                rollIndex = -1;
+                state = PlayerState::WALKING;
+            }
+        }
+    }
+    else if(state == PlayerState::CUTTING)
+    {
+        if(cut_left)  isCuttingLeft = true;
+        if(cut_right)  isCuttingLeft = false;
+        if(!cut_left && !cut_right)
+        {
+            cutIndex = 0;
+            state = PlayerState::WALKING;
+            update();
+            return;
+        }
+        cutFrameCounter += PICTURE_DELTA;
+        if(cutFrameCounter >= CUT_FRAME_INTERVAL)
+        {
+            cutFrameCounter = 0;
+            cutIndex = (cutIndex + 1) % 4;
+            update();
+            if(cutIndex >= 3)
+            {
+                cutIndex = -1;
+                Resource * r = findNearbyResource();
+                r->takeDamage();
+                state = PlayerState::WALKING;
+            }
+        }
+    }
+    else if(state == PlayerState::DIGGING)
+    {
+        if(dig_left)  isDiggingLeft = true;
+        if(dig_right)  isDiggingLeft = false;
+        if(!dig_left && !dig_right)
+        {
+            digIndex = 0;
+            state = PlayerState::WALKING;
+            update();
+            return;
+        }
+        digFrameCounter += PICTURE_DELTA;
+        if(digFrameCounter >= DIG_FRAME_INTERVAL)
+        {
+            digFrameCounter = 0;
+            digIndex = (digIndex + 1) % 4;
+            update();
+            if(digIndex >= 3)
+            {
+                digIndex = -1;
+                Resource * r = findNearbyResource();
+                r->takeDamage();
+                state = PlayerState::WALKING;
+            }
+        }
+    }
+}
+
 
 //更新位置函数
-void Player::updatePosition(float speed, float delta)
+void Player::updatePosition()
 {
+    qreal delta = POSITION_DELTA;
+    qreal speed = 0.0;
+    bool m_up = false;
+    bool m_down = false;
+    bool m_left = false;
+    bool m_right = false;
+    switch(state)
+    {
+    case PlayerState::WALKING:
+        speed = WALKSPEED;
+        m_up = walk_up;
+        m_down = walk_down;
+        m_left = walk_left;
+        m_right = walk_right;
+        break;
+    case PlayerState::ROLLING:
+        speed = ROLLSPEED;
+        m_up = roll_up;
+        m_down = roll_down;
+        m_left = roll_left;
+        m_right = roll_right;
+        break;
+    case PlayerState::CUTTING:
+        return;
+    case PlayerState::DIGGING:
+        return;
+    }
+
     QPointF vel(0, 0);
     if (m_up)    vel.ry() -= 1;
     if (m_down)  vel.ry() += 1;
@@ -102,6 +188,25 @@ void Player::updatePosition(float speed, float delta)
     setPos(newPos);
 }
 
+Resource* Player::findNearbyResource() const
+{
+    QPointF center = pos() + QPointF(PLAYERWIDTH / 2, PLAYERHEIGHT / 2);
+    QPoint grid = gMap->pixelToGrid(center);
+
+    static const QPoint dirs[] = {
+        {0, 0}, {0, 1}, {0, -1}
+    };
+
+    for (const QPoint& d : dirs)
+    {
+        QPoint checkGrid = grid + d;
+        Resource* r = resourceManager->checkResource(checkGrid);
+        if (r && !r->isDead())
+            return r;
+    }
+    return nullptr;
+}
+
 QRectF Player::boundingRect() const
 {
     return QRectF(0, 0, PLAYERWIDTH, PLAYERHEIGHT);
@@ -110,27 +215,25 @@ QRectF Player::boundingRect() const
 //绘制玩家
 void Player::paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    if(isGoingLeft)
+    if(isWalking())
     {
-        if(rollingCount != 0)
-        {
-            p->drawPixmap(0, 0, leftRolling[rollingCount % 4]);
-        }
-        else
-        {
-            p->drawPixmap(0, 0, leftWalking[nowIndex]);
-        }
+        if(isWalkingLeft)  p->drawPixmap(0, 0, leftWalking[walkIndex]);
+        else  p->drawPixmap(0, 0, rightWalking[walkIndex]);
     }
-    else
+    else if(isRolling())
     {
-        if(rollingCount != 0)
-        {
-            p->drawPixmap(0, 0, rightRolling[(rollingCount - 1) % 4]);
-        }
-        else
-        {
-            p->drawPixmap(0, 0, rightWalking[nowIndex]);
-        }
+        if(isRollingLeft)  p->drawPixmap(0, 0, leftRolling[rollIndex % 4]);
+        else  p->drawPixmap(0, 0, rightRolling[rollIndex % 4]);
+    }
+    else if(isCutting())
+    {
+        if(isCuttingLeft)  p->drawPixmap(0, 0, leftCutting[cutIndex]);
+        else  p->drawPixmap(0, 0, rightCutting[cutIndex]);
+    }
+    else if(isDigging())
+    {
+        if(isDiggingLeft)  p->drawPixmap(0, 0, leftDigging[digIndex]);
+        else  p->drawPixmap(0, 0, rightDigging[digIndex]);
     }
 }
 
@@ -146,5 +249,15 @@ void Player::initpic()
     {
         leftRolling[i].load(QString(":/picture/player/rolling/%1.png").arg(i + 1));
         rightRolling[i] = leftRolling[i].transformed(QTransform().scale(-1, 1));
+    }
+    for(int i = 0; i < 4; i++)
+    {
+        leftCutting[i].load(QString(":/picture/player/cutting/%1.png").arg(i + 1));
+        rightCutting[i] = leftCutting[i].transformed(QTransform().scale(-1, 1));
+    }
+    for(int i = 0; i < 4; i++)
+    {
+        leftDigging[i].load(QString(":/picture/player/digging/%1.png").arg(i + 1));
+        rightDigging[i] = leftDigging[i].transformed(QTransform().scale(-1, 1));
     }
 }
