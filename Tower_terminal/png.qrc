@@ -144,5 +144,18 @@
         <file>resource/grass_tree_highlight_2.png</file>
         <file>resource/swamp_tree_2.png</file>
         <file>resource/grass_rock_4.png</file>
+        <file>bullet picture/bullet_archer.png.png</file>
+        <file>bullet picture/bullet_cannon_lv1_0.png.png</file>
+        <file>bullet picture/bullet_cannon_lv1_1.png.png</file>
+        <file>bullet picture/bullet_cannon_lv1_2.png.png</file>
+        <file>bullet picture/bullet_mortar_lv1_0.png.png</file>
+        <file>bullet picture/bullet_mortar_lv1_1.png.png</file>
+        <file>bullet picture/bullet_mortar_lv1_2.png.png</file>
+        <file>bullet picture/bullet_mortar_lv2_0.png.png</file>
+        <file>bullet picture/bullet_mortar_lv2_1.png.png</file>
+        <file>bullet picture/bullet_mortar_lv2_2.png.png</file>
+        <file>bullet picture/bullet_mortar_lv3_0.png.png</file>
+        <file>bullet picture/bullet_mortar_lv3_1.png.png</file>
+        <file>bullet picture/bullet_mortar_lv3_2.png.png</file>
     </qresource>
 </RCC>
