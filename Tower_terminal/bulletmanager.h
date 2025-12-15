@@ -13,7 +13,7 @@ public:
     virtual ~BulletManager();  // 添加虚析构函数声明
 
     // 修改createBullet函数，添加towerLevel参数
-    Bullet* createBullet(const Vector2& startPos, const Monster* target, TowerType towerType,
+    Bullet* createBullet(const Vector2& startPos, Monster* target, TowerType towerType,
                          int towerLevel = 1,  // 新增：炮塔等级
                          float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
 

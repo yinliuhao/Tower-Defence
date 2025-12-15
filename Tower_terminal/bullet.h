@@ -5,6 +5,7 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QPixmap>
+#include <QPointer>
 #include "structVector.h"
 #include "monster.h"
 #include "tower.h"
@@ -21,7 +22,7 @@ class Bullet : public QObject, public QGraphicsItem
     Q_INTERFACES(QGraphicsItem)
 public:
     // 统一构造函数声明
-    Bullet(const Vector2& startPos, const Monster* target, TowerType towerType,
+    Bullet(const Vector2& startPos, Monster* target, TowerType towerType,
            int towerLevel = 1,
            float speed = BULLET_SPEED, float damage = BULLET_DAMAGE, QGraphicsItem* parent = nullptr);
 
@@ -37,7 +38,7 @@ public:
     bool isActive() const { return active_; }
     bool hasHit() const { return hasHit_; }
     const Vector2 getPosition() const { return position_; }
-    const Monster* getTarget() const { return target; }
+    Monster* getTarget() { return target; }
     float getDamage() { return damage_; }
     float getRotation() const { return rotation_; }
     TowerType getTowerType() const { return towerType_; }
@@ -50,15 +51,16 @@ public:
 public slots:
     void onUpdateTimer();
     void onFrameUpdate();
+
 protected:  // 改为protected，让派生类可以访问
     Vector2 position_;
-    const Monster * target;
+    QPointer<Monster> target;
     float speed_;
     float damage_;
     bool active_;
     bool hasHit_;
     float tolerance_;
-    float rotation_;
+    float rotation_;  //角度制
     TowerType towerType_;  // 只保留一个声明
     int towerLevel_;
 
@@ -71,7 +73,7 @@ protected:  // 改为protected，让派生类可以访问
     QSize pixmapSize_;
 
     void loadDefaultPixmap();
-    void loadAnimatedPixmap(const QString& basePath, int frameCount);
+    void loadAnimatedPixmap();
 
     bool isAtTarget() const;
     virtual void hitTarget();  // 改为虚函数

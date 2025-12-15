@@ -368,9 +368,7 @@ void Map::setShowGrid(bool show) {
 }
 
 // 检查是否可以放置塔
-bool Map::canPlaceTower(const QPointF& pixelPos) const {
-    QPoint gridPos = pixelToGrid(pixelPos);
-    // 塔只能放在平地上
+bool Map::canPlaceTower(const QPoint& gridPos) const {
     return isBuildable(gridPos.x(), gridPos.y());
 }
 

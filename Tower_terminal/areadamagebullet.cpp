@@ -4,18 +4,23 @@
 #include <QDebug>
 #include <cmath>
 #include <QGraphicsScene>  // 添加包含
-// 修正构造函数实现
-AreaDamageBullet::AreaDamageBullet(const Vector2& startPos, const Monster* target, TowerType towerType,
-                                   int towerLevel, float speed, float damage, float areaRadius, QGraphicsItem* parent)
-    : Bullet(startPos, target, towerType, towerLevel, speed, damage, parent),
-    areaRadius_(areaRadius)
+
+AreaDamageBullet::AreaDamageBullet(const Vector2& startPos, Monster* target, TowerType towerType,
+                 int towerLevel, float speed, float damage, float radius, QGraphicsItem* parent):
+    Bullet(startPos, target, towerType, towerLevel, speed, damage, parent)
 {
+    areaRadius_ = radius;
 }
+
 
 void AreaDamageBullet::hitTarget()
 {
-    // 使用基类的getter方法访问私有成员
-    if (!isActive() || !getTarget()) return;
+    hasHit_ = true;
+    active_ = false;
+
+    if (updateTimer_ && updateTimer_->isActive()) {
+        updateTimer_->stop();
+    }
 
     Vector2 explosionCenter = getTarget()->getPosition();
     QVector<Monster*> monstersInArea = findMonstersInArea(explosionCenter, areaRadius_);
@@ -32,7 +37,7 @@ void AreaDamageBullet::hitTarget()
             qDebug() << "范围伤害：对怪物造成" << actualDamage << "伤害，距离：" << distance;
         }
     }
-
+    startEffect();
     // 调用基类的命中处理
     Bullet::hitTarget();  // 调用基类实现
 }

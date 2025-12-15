@@ -144,18 +144,48 @@
         <file>resource/grass_tree_highlight_2.png</file>
         <file>resource/swamp_tree_2.png</file>
         <file>resource/grass_rock_4.png</file>
-        <file>bullet picture/bullet_archer.png.png</file>
-        <file>bullet picture/bullet_cannon_lv1_0.png.png</file>
-        <file>bullet picture/bullet_cannon_lv1_1.png.png</file>
-        <file>bullet picture/bullet_cannon_lv1_2.png.png</file>
-        <file>bullet picture/bullet_mortar_lv1_0.png.png</file>
-        <file>bullet picture/bullet_mortar_lv1_1.png.png</file>
-        <file>bullet picture/bullet_mortar_lv1_2.png.png</file>
-        <file>bullet picture/bullet_mortar_lv2_0.png.png</file>
-        <file>bullet picture/bullet_mortar_lv2_1.png.png</file>
-        <file>bullet picture/bullet_mortar_lv2_2.png.png</file>
-        <file>bullet picture/bullet_mortar_lv3_0.png.png</file>
-        <file>bullet picture/bullet_mortar_lv3_1.png.png</file>
-        <file>bullet picture/bullet_mortar_lv3_2.png.png</file>
+        <file>bullet/archer.png</file>
+        <file>bullet/cannon_level1.png</file>
+        <file>bullet/cannon_level2.png</file>
+        <file>bullet/cannon_level3.png</file>
+        <file>bullet/mortal_level1_frame1.png</file>
+        <file>bullet/mortal_level1_frame2.png</file>
+        <file>bullet/mortal_level1_frame3.png</file>
+        <file>bullet/mortal_level1_frame4.png</file>
+        <file>bullet/mortar_level2_frame1.png</file>
+        <file>bullet/mortar_level2_frame2.png</file>
+        <file>bullet/mortar_level2_frame3.png</file>
+        <file>bullet/mortar_level2_frame4.png</file>
+        <file>bullet/mortar_level3_frame1.png</file>
+        <file>bullet/mortar_level3_frame2.png</file>
+        <file>bullet/mortar_level3_frame3.png</file>
+        <file>bullet/mortar_level3_frame4.png</file>
+        <file>tower/archer_level1.png</file>
+        <file>tower/archer_level1_frame1.png</file>
+        <file>tower/archer_level1_frame2.png</file>
+        <file>tower/archer_level1_frame3.png</file>
+        <file>tower/archer_level1_frame4.png</file>
+        <file>tower/archer_level2.png</file>
+        <file>tower/archer_level2_frame1.png</file>
+        <file>tower/archer_level2_frame2.png</file>
+        <file>tower/archer_level2_frame3.png</file>
+        <file>tower/archer_level2_frame4.png</file>
+        <file>tower/archer_level3.png</file>
+        <file>tower/archer_level3_frame1.png</file>
+        <file>tower/archer_level3_frame2.png</file>
+        <file>tower/archer_level3_frame3.png</file>
+        <file>tower/archer_level3_frame4.png</file>
+        <file>tower/cannon_level1.png</file>
+        <file>tower/cannon_level2.png</file>
+        <file>tower/cannon_level3.png</file>
+        <file>tower/level1_base.png</file>
+        <file>tower/level2_base.png</file>
+        <file>tower/level3_base.png</file>
+        <file>tower/mortar_level1.png</file>
+        <file>tower/mortar_level2.png</file>
+        <file>tower/mortar_level3.png</file>
+        <file>tower/preview_archer.png</file>
+        <file>tower/preview_cannon.png</file>
+        <file>tower/preview_mortar.png</file>
     </qresource>
 </RCC>

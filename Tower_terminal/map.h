@@ -65,7 +65,7 @@ public:
 
     bool canMoveTo(int fromX, int fromY, int toX, int toY) const;
     // 塔相关
-    bool canPlaceTower(const QPointF& pixelPos) const;
+    bool canPlaceTower(const QPoint& gridPos) const;
     bool placeTower(const QPointF& pixelPos);
     bool removeTower(const QPointF& pixelPos);
 

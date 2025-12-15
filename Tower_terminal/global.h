@@ -6,10 +6,12 @@
 #include "monster.h"
 #include "player.h"
 #include "resourcemanager.h"
+#include "buildmanager.h"
 
 extern Map* gMap;   //  只声明，不定义！
 extern MonsterSpawnerTower* monsterSpawner;//怪物生成器
 extern ResourceManager * resourceManager;
 extern Player * me;
+extern BuildManager * buildManager;
 
 #endif

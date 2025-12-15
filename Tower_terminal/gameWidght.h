@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "towerButton.h"
-#include "resourcemanager.h"
 #include "playerUI.h"
 #include <vector>
 #include <QGraphicsView>
@@ -23,11 +22,14 @@ class Game : public QWidget
 public:
     explicit Game(QWidget *parent = nullptr);
     ~Game();
-    void keyPressEvent(QKeyEvent *ev);
-    void keyReleaseEvent(QKeyEvent *ev);
+    void keyPressEvent(QKeyEvent *ev) override;
+    void keyReleaseEvent(QKeyEvent *ev) override;
 
 private slots:
    // void handleCampAttacked(float damage);
+
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
 
 private:
     Ui::Game *ui;

@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     areadamagebullet.cpp \
+    buildmanager.cpp \
     bullet.cpp \
     bulletmanager.cpp \
     gameWidght.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     monsterSpawner.cpp \
     player.cpp \
     playerUI.cpp \
+    previewtower.cpp \
     resource.cpp \
     resourcemanager.cpp \
     tower.cpp \
@@ -29,6 +31,7 @@ SOURCES += \
 
 HEADERS += \
     areadamagebullet.h \
+    buildmanager.h \
     bullet.h \
     bulletmanager.h \
     gameWidght.h \
@@ -39,6 +42,7 @@ HEADERS += \
     monsterSpawner.h \
     player.h \
     playerUI.h \
+    previewtower.h \
     resource.h \
     resourcemanager.h \
     structVector.h \

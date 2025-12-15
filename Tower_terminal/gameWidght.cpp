@@ -7,7 +7,8 @@
 #include "global.h"
 #include "utils.h"
 #include <QDebug>
-
+#include "tower.h"
+#include "bulletmanager.h"
 
 Game::Game(QWidget *parent)
     : QWidget(parent),
@@ -32,6 +33,15 @@ Game::Game(QWidget *parent)
 
     // 3. 取消滚动区域边距（重要）
     view->setFrameStyle(QFrame::NoFrame);
+
+    //开启鼠标追踪
+    setMouseTracking(true);
+    view->setMouseTracking(true);
+    view->viewport()->setMouseTracking(true);
+
+    //安装事件过滤器
+    view->installEventFilter(this);
+    view->viewport()->installEventFilter(this);
 
     // 初始化地图
      gMap = new Map;
@@ -138,6 +148,39 @@ Game::Game(QWidget *parent)
             myUI->collectResource(res->getType());
         });
     }
+
+
+    buildManager = new BuildManager;
+    for(int i = 0; i < towerNum; i++)
+    {
+        connect(tower[i], &QPushButton::clicked, this, [i](){
+            switch(i)
+            {
+            case 0:
+                buildManager->startBuild(TowerType::TOWER1);
+                break;
+            case 1:
+                buildManager->startBuild(TowerType::TOWER2);
+                break;
+            case 2:
+                buildManager->startBuild(TowerType::TOWER3);
+                break;
+            }
+        });
+    }
+
+    setMouseTracking(true);
+    view->setMouseTracking(true);
+
+    connect(buildManager, &BuildManager::previewCreated,
+            this, [this](PreviewTower* preview){
+                scene->addItem(preview);
+            });
+
+    connect(buildManager, &BuildManager::previewRemoved,
+            this, [this](PreviewTower* preview){
+                scene->removeItem(preview);
+            });
 }
 
 
@@ -268,4 +311,82 @@ void Game::keyReleaseEvent(QKeyEvent *ev)
         me->setWalkRight(false);
     }
     QWidget::keyReleaseEvent(ev);
+}
+
+bool Game::eventFilter(QObject *watched, QEvent *event)
+{
+    // ---------------------------------------------------------
+    // 1. 处理鼠标移动 (预览塔跟随)
+    // ---------------------------------------------------------
+    if (event->type() == QEvent::MouseMove)
+    {
+        // 如果不在建造模式，不拦截，交给 View 默认处理
+        if (!buildManager->isBuilding())
+            return false;
+
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        // 【关键】因为监听的是 View，所以 pos 直接就是 View 坐标
+        QPoint viewPos = mouseEvent->pos();
+        QPointF worldPos = view->mapToScene(viewPos);
+        QPoint grid = gMap->pixelToGrid(worldPos);
+
+        bool canPlace = gMap->canPlaceTower(grid);
+        PreviewTower* preview = buildManager->getPreviewTower();
+        if (preview)
+        {
+            preview->setGridPos(grid);
+            preview->setValid(canPlace);
+        }
+        // 这里返回 false，让 view 也能收到移动信号（不影响功能，比较保险）
+        return false;
+    }
+
+    // ---------------------------------------------------------
+    // 2. 处理鼠标按下 (放置塔 / 取消)
+    // ---------------------------------------------------------
+    if (event->type() == QEvent::MouseButtonPress)
+    {
+        // 如果不在建造模式，就不管，让 View 自己处理（比如点击选中其他塔）
+        if (!buildManager->isBuilding())
+            return false;
+
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+
+        // 同样：坐标直接就是 View 坐标
+        QPoint viewPos = mouseEvent->pos();
+        QPointF worldPos = view->mapToScene(viewPos);
+        QPoint grid = gMap->pixelToGrid(worldPos);
+
+        // --- 左键：放置 ---
+        if (mouseEvent->button() == Qt::LeftButton)
+        {
+            if (gMap->canPlaceTower(grid))
+            {
+                // 创建真塔
+                Tower* tower = new Tower(buildManager->getPreviewTower()->getTowerType());
+
+                // 这里需要你的 Tower 类有对应的添加到场景的逻辑
+                tower->put(grid.x(), grid.y());
+                scene->addItem(tower);
+                // 放置成功后，取消建造模式
+                connect(tower->getManager(), &BulletManager::bulletCreated, this, [this](Bullet* bullet){
+                    scene->addItem(bullet);
+                });
+                buildManager->cancelBuild();
+            }
+            // 返回 true，表示“这事我处理完了”，View 就不要再瞎掺和了
+            return true;
+        }
+
+        // --- 右键：取消 ---
+        else if (mouseEvent->button() == Qt::RightButton)
+        {
+            buildManager->cancelBuild();
+            return true; // 拦截事件，防止弹出默认菜单等
+        }
+    }
+
+    // 其他事件交给父类默认处理
+    return QWidget::eventFilter(watched, event);
 }

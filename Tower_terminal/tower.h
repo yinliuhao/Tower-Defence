@@ -7,6 +7,7 @@
 #include <QTransform>   // 用于图片旋转
 #include <QPointF>
 #include <structVector.h>
+#include <vector>
 
 class Monster;
 class Bullet;
@@ -36,7 +37,7 @@ private:
 
     // ----------- 坐标旋转相关 -----------
     Vector2 towerGridPosition;
-    qreal currentRotation;   //弧度制
+    qreal currentRotation;   //角度制
     Vector2 towerPixalCenter;
 
     // ----------- 子弹属性 -----------
@@ -49,9 +50,15 @@ private:
 
     // ----------- 图像 -----------
     QPixmap towerPixmap;
+    QPixmap basePixmap;
+    std::vector<QPixmap> framePixmap;
+    int totalFrame;
+    int currentFrame;
 
     // ----------- 外部组件 -----------
+    QTimer *trackTimer;
     QTimer *attackTimer;
+    QTimer *frameTimer;
     BulletManager* manager;
 
 public:
@@ -71,22 +78,25 @@ public:
     int getBuildCost() const;
     int getHealth() const;
     int getMaxHealth() const;
+    BulletManager* getManager();
 
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*) override;
 
 private:
-    void rotateToTarget(const Monster* target);
-    void updateRotation(qreal angleRad);
-    void loadPixmap(const QString& path);
+    void rotateToTarget(Monster* target);
+    void updateRotation(qreal angle);
+    void loadPixmap();
 
-    const Monster* selectAttackTarget() const;
-    void fire(const Monster* target) const;
+    Monster* selectAttackTarget();
+    void fire(Monster* target) const;
 
 private slots:
     void onAttackTimerTimeout();
+    void onFrameTimerTimeout();
+    void onTrackTimerTimeout();
 
 signals:
-    void clearTower(int buildMoney);
+    void clearTower(TowerType type);
 };

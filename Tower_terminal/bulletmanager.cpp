@@ -3,6 +3,14 @@
 #include <QDebug>
 #include <algorithm>
 #include "areadamagebullet.h"  // 添加包含
+
+BulletManager::BulletManager(float speed, float damage, QObject* parent)
+: QObject(parent)
+{
+    this->bulletDamage_ = damage;
+    this->bulletSpeed_ = speed;
+}
+
 // 添加析构函数声明到头文件后，实现如下：
 BulletManager::~BulletManager()
 {
@@ -10,7 +18,7 @@ BulletManager::~BulletManager()
 }
 
 // 修正createBullet函数调用
-Bullet* BulletManager::createBullet(const Vector2& fromPos, const Monster* target,
+Bullet* BulletManager::createBullet(const Vector2& fromPos, Monster* target,
                                     TowerType towerType, int towerLevel,
                                     float speed, float damage, QGraphicsItem* parent)
 {
