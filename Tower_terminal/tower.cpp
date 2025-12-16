@@ -7,7 +7,6 @@
 #include <cmath>  // 用于sqrt计算距离
 #include "tower.h"
 #include "monster.h"
-#include <cmath>  // Qt数学库（计算角度）
 #include <QDebug>
 #include <QPainter>
 #include <QRectF>
@@ -35,7 +34,7 @@ Tower::Tower(TowerType type)
       attackRange = TOWER1_ATTACKRANGE;
       attackInterval =  TOWER1_ATTACKINTERVAL;
       bulletDamage = 50;  // 添加初始化
-      bulletSpeed = 8;    // 添加初始化
+      bulletSpeed = 5;    // 添加初始化
       totalFrame = 4;
       break;
     case TowerType::TOWER2:
@@ -44,7 +43,7 @@ Tower::Tower(TowerType type)
         attackRange = TOWER2_ATTACKRANGE;
         attackInterval =  TOWER2_ATTACKINTERVAL;
         bulletDamage = 15;  // 添加初始化
-        bulletSpeed = 10;   // 添加初始化
+        bulletSpeed = 5;   // 添加初始化
         totalFrame = 1;
         break;
     case TowerType::TOWER3:
@@ -296,7 +295,7 @@ Monster* Tower::selectAttackTarget()
                     // 只选择仍在场景中、仍存活且处于移动状态的怪物
                     if (!m->scene()) continue;
                     if (m->isDead()) continue;
-                    if (m->getMonsterState() != MonsterState::MOVING) continue;
+                    if (m->getMonsterState() == MonsterState::DEAD) continue;
 
                     double dx = m->x() - tx;
                     double dy = m->y() - ty;

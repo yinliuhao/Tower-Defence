@@ -9,7 +9,7 @@ PreviewTower::PreviewTower(TowerType type):
     setAcceptedMouseButtons(Qt::NoButton);
     setAcceptHoverEvents(false);
 
-    setZValue(1000);
+    setZValue(PREVIEWTOWERZVALUE);
 
     switch(type)
     {
@@ -53,11 +53,30 @@ void PreviewTower::paint(QPainter* painter,
                             ? QColor(0, 200, 0, 80)
                             : QColor(200, 0, 0, 80);
 
-    painter->setBrush(rangeColor);
-    painter->setPen(Qt::NoPen);
-    painter->drawEllipse(QPointF(0, 0),
-                         attackRadius,
-                         attackRadius);
+    if (type != TowerType::TOWER3)
+    {
+        // 普通塔：实心圆
+        painter->setBrush(rangeColor);
+        painter->setPen(Qt::NoPen);
+        painter->drawEllipse(QPointF(0, 0),
+                             attackRadius,
+                             attackRadius);
+    }
+    else
+    {
+        // 迫击炮：圆环
+        qreal outerR = attackRadius;
+        qreal innerR = attackRadius / 3;
+
+        QPainterPath path;
+        path.setFillRule(Qt::OddEvenFill);   // 关键！！
+        path.addEllipse(QPointF(0, 0), outerR, outerR);
+        path.addEllipse(QPointF(0, 0), innerR, innerR);
+
+        painter->setBrush(rangeColor);
+        painter->setPen(Qt::NoPen);
+        painter->drawPath(path);
+    }
 
     // ===== 炮塔本体 =====
     painter->setOpacity(0.6);

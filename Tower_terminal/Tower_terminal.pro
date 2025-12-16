@@ -13,6 +13,7 @@ SOURCES += \
     buildmanager.cpp \
     bullet.cpp \
     bulletmanager.cpp \
+    explorationmarker.cpp \
     gameWidght.cpp \
     global.cpp \
     main.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     buildmanager.h \
     bullet.h \
     bulletmanager.h \
+    explorationmarker.h \
     gameWidght.h \
     global.h \
     map.h \

@@ -14,7 +14,7 @@
 #define BULLET_DAMAGE 5.0f
 #define BULLET_TOLERANCE 5.0f
 #define UPDATE_INTERVAL_MS 16
-#define BULLET_FRAME_DELAY 100
+#define BULLET_FRAME_DELAY 25
 
 class Bullet : public QObject, public QGraphicsItem
 {
@@ -46,14 +46,14 @@ protected slots:
 
 protected:
     void updatePosition();
-    virtual void hitTarget();
-    void startEffect();
+    void hitTarget();
     void destroySelf();
 
     bool isAtTarget() const;
 
     void loadDefaultPixmap();
     void loadAnimatedPixmap();
+    virtual void takeDamage();
 
 protected:
     Vector2 position_;
