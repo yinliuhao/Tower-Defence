@@ -175,6 +175,14 @@ Game::Game(QWidget *parent)
     connect(buildManager, &BuildManager::previewCreated,
             this, [this](PreviewTower* preview){
                 scene->addItem(preview);
+
+                QPoint viewPos = view->mapFromGlobal(QCursor::pos());
+                QPointF worldPos = view->mapToScene(viewPos);
+                QPoint grid = gMap->pixelToGrid(worldPos);
+
+                bool canPlace = gMap->canPlaceTower(grid);
+                preview->setGridPos(grid);
+                preview->setValid(canPlace);
             });
 
     connect(buildManager, &BuildManager::previewRemoved,
@@ -361,7 +369,7 @@ bool Game::eventFilter(QObject *watched, QEvent *event)
         // --- 左键：放置 ---
         if (mouseEvent->button() == Qt::LeftButton)
         {
-            if (gMap->canPlaceTower(grid))
+            if (gMap->placeTower(worldPos))
             {
                 // 创建真塔
                 Tower* tower = new Tower(buildManager->getPreviewTower()->getTowerType());

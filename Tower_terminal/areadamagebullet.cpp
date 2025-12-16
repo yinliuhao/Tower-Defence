@@ -16,11 +16,11 @@ AreaDamageBullet::AreaDamageBullet(const Vector2& startPos,
 {
 }
 
-void AreaDamageBullet::hitTarget()
+void AreaDamageBullet::takeDamage()
 {
     // Bullet 基类已经做过 hasHit / dying / target 判定
     if (!target) {
-        Bullet::hitTarget();
+        destroySelf();
         return;
     }
 
@@ -40,8 +40,7 @@ void AreaDamageBullet::hitTarget()
         monster->takeDamage(damage_ * factor);
     }
 
-    // 🔑 把“子弹后续生命周期”交还给基类
-    Bullet::hitTarget();
+    destroySelf();
 }
 
 QVector<Monster*> AreaDamageBullet::findMonstersInArea(const Vector2& center,

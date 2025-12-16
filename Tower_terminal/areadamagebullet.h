@@ -17,7 +17,7 @@ public:
                      QGraphicsItem* parent = nullptr);
 
 protected:
-    void hitTarget() override;
+    void takeDamage() override;
 
 private:
     QVector<Monster*> findMonstersInArea(const Vector2& center, float radius);

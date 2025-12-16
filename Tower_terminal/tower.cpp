@@ -35,7 +35,7 @@ Tower::Tower(TowerType type)
       attackRange = TOWER1_ATTACKRANGE;
       attackInterval =  TOWER1_ATTACKINTERVAL;
       bulletDamage = 50;  // 添加初始化
-      bulletSpeed = 8;    // 添加初始化
+      bulletSpeed = 5;    // 添加初始化
       totalFrame = 4;
       break;
     case TowerType::TOWER2:
@@ -44,7 +44,7 @@ Tower::Tower(TowerType type)
         attackRange = TOWER2_ATTACKRANGE;
         attackInterval =  TOWER2_ATTACKINTERVAL;
         bulletDamage = 15;  // 添加初始化
-        bulletSpeed = 10;   // 添加初始化
+        bulletSpeed = 5;   // 添加初始化
         totalFrame = 1;
         break;
     case TowerType::TOWER3:

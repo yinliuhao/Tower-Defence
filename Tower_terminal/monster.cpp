@@ -108,7 +108,7 @@ void Monster::initializeMonster()
 // 怪物析构函数
 Monster::~Monster()
 {
-    qDebug() << "~Monster" << static_cast<void*>(this);
+    //qDebug() << "~Monster" << static_cast<void*>(this);
 
     // #region agent log
     /*{
@@ -224,13 +224,13 @@ void Monster::markDead()
     currentState = MonsterState::DEAD;
 
     // 死亡后直接隐藏图像，避免在场景中继续显示“尸体”
-    setVisible(false);
+    //setVisible(false);
 
     if (isAttacking) {
         stopAttack();
     }
 
-    qDebug() << " emit died";
+    //qDebug() << " emit died";
     emit died(monsterGold);
     // 注意：真正的删除和从场景移除统一由 MonsterSpawnerTower::onMonsterDied 负责
 }
@@ -268,10 +268,10 @@ void Monster::updateAnimationFrame()
 // 移动到下一个路径点
 void Monster::moveToNextPosition()
 {
-    qDebug() << "[Monster::move]"
-             << static_cast<void*>(this)
-             << "state:" << int(currentState)
-             << "isDead:" << isDead();
+    //qDebug() << "[Monster::move]"
+    //         << static_cast<void*>(this)
+    //         << "state:" << int(currentState)
+    //         << "isDead:" << isDead();
 
     if (isDead() || currentState == MonsterState::ATTACKING)
         return;

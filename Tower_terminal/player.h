@@ -61,6 +61,7 @@ public:
     Resource * getTarget() { return target; }
 
 
+
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter *p, const QStyleOptionGraphicsItem*, QWidget*) override;
@@ -124,6 +125,8 @@ private:
     PlayerState state = PlayerState::WALKING;
 
     Resource * target = nullptr;
+
+    int detectRange = 200.0;
 
 };
 

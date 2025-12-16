@@ -78,8 +78,8 @@ void Bullet::paint(QPainter* painter,
     QPointF drawPos(-pixmapSize_.width() / 2,
                     -pixmapSize_.height() / 2);
 
-    if (!bulletFrames_.isEmpty() && currentFrame_ < bulletFrames_.size())
-        painter->drawPixmap(drawPos, bulletFrames_[currentFrame_]);
+    if (!bulletFrames_.isEmpty() && currentFrame_ != 0)
+        painter->drawPixmap(drawPos, bulletFrames_[currentFrame_ - 1]);
     else
         painter->drawPixmap(drawPos, bulletPixmap_);
 
@@ -107,7 +107,7 @@ void Bullet::updatePosition()
              << "target:" << static_cast<void*>(target);
 
     // #region agent log
-    {
+    /*{
         try {
             QDir().mkpath(".cursor");
             QFile file(".cursor/debug.log");
@@ -128,11 +128,11 @@ void Bullet::updatePosition()
             }
         } catch (...) {
         }
-    }
+    }*/
     // #endregion
 
     if (dying_ || !target) {
-        qDebug() << " -> destroySelf";
+        //qDebug() << " -> destroySelf";
         destroySelf();
         return;
     }
@@ -161,19 +161,18 @@ bool Bullet::isAtTarget() const
 
 void Bullet::hitTarget()
 {
-    qDebug() << "[Bullet::hitTarget]"
-             << static_cast<void*>(this)
-             << "target:" << static_cast<void*>(target)
-             << "hasHit:" << hasHit_
-             << "dying:" << dying_;
+    //qDebug() << "[Bullet::hitTarget]"
+    //         << static_cast<void*>(this)
+    //         << "target:" << static_cast<void*>(target)
+    //         << "hasHit:" << hasHit_
+    //         << "dying:" << dying_;
 
     if (hasHit_ || dying_ || !target) return;
 
     hasHit_ = true;
-    dying_  = true;
 
     // #region agent log
-    {
+    /*{
         try {
             QFile file(".cursor/debug.log");
             if (file.open(QIODevice::Append | QIODevice::Text)) {
@@ -192,32 +191,26 @@ void Bullet::hitTarget()
             }
         } catch (...) {
         }
-    }
+    }*/
     // #endregion
 
-    qDebug() << " -> takeDamage";
-    target->takeDamage(damage_);
-
-    emit hit(damage_);
-
     updateTimer_->stop();
-    startEffect();
-}
-
-void Bullet::startEffect()
-{
     if (totalFrames_ > 1) {
         currentFrame_ = 0;
         frameTimer_->start();
     } else {
-        destroySelf();
+        emit hit(damage_);
+        qDebug() << " -> takeDamage";
+        takeDamage();
     }
 }
 
 void Bullet::onFrameUpdate()
 {
-    if (++currentFrame_ >= totalFrames_) {
-        destroySelf();
+    if (++currentFrame_ > totalFrames_) {
+        //qDebug() << " -> takeDamage";
+        dying_ = true;
+        takeDamage();
         return;
     }
     update();
@@ -241,10 +234,14 @@ void Bullet::loadAnimatedPixmap()
     if (towerType_ == TowerType::TOWER3) {
         for (int i = 1; i <= 4; ++i) {
             bulletFrames_.push_back(
-                QPixmap(QString(":/picture/bullet/mortar_level%1/frame%2.png")
+                QPixmap(QString(":/picture/bullet/mortar_level%1_frame%2.png")
                             .arg(towerLevel_).arg(i)));
         }
         totalFrames_ = bulletFrames_.size();
+    }
+
+    if (!bulletFrames_.isEmpty()) {
+        pixmapSize_ = bulletFrames_.first().size();
     }
 }
 
@@ -265,5 +262,12 @@ void Bullet::loadDefaultPixmap()
     default:
         break;
     }
-    pixmapSize_ = bulletPixmap_.size();
+    if (!bulletPixmap_.isNull())
+        pixmapSize_ = bulletPixmap_.size();
+}
+
+void Bullet::takeDamage()
+{
+    target->takeDamage(damage_);
+    destroySelf();
 }
