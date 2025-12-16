@@ -189,6 +189,9 @@ Game::Game(QWidget *parent)
             this, [this](PreviewTower* preview){
                 scene->removeItem(preview);
             });
+
+    explorationmarker = new ExplorationMarker;
+    scene->addItem(explorationmarker);
 }
 
 
@@ -234,7 +237,7 @@ void Game::keyPressEvent(QKeyEvent *ev)
             if(r->getType() == ResourceType::GRASS_TREE || r->getType() == ResourceType::SWAMP_TREE)
             {
                 me->setState(PlayerState::CUTTING);
-                if(r->getCenterPixal().x() < me->pos().x())
+                if(r->getCenterPixal().x() < me->getCenterPos().x())
                 {
                     me->setCutLeft(true);
                     me->setCutRight(false);
@@ -250,7 +253,7 @@ void Game::keyPressEvent(QKeyEvent *ev)
             else
             {
                 me->setState(PlayerState::DIGGING);
-                if(r->getCenterPixal().x() < me->pos().x())
+                if(r->getCenterPixal().x() < me->getCenterPos().x())
                 {
                     me->setDigLeft(true);
                     me->setDigRight(false);
@@ -293,6 +296,7 @@ void Game::keyReleaseEvent(QKeyEvent *ev)
                 tower[i]->show();
                 tower[i]->raise();
             }
+            explorationmarker->setMarked(true);
         }
         else
         {
@@ -300,6 +304,7 @@ void Game::keyReleaseEvent(QKeyEvent *ev)
             {
                 tower[i]->hide();
             }
+            explorationmarker->setMarked(false);
         }
         return;
     }
@@ -340,11 +345,12 @@ bool Game::eventFilter(QObject *watched, QEvent *event)
         QPoint grid = gMap->pixelToGrid(worldPos);
 
         bool canPlace = gMap->canPlaceTower(grid);
+        bool canDetect = me->isDetectable(grid.x(), grid.y());
         PreviewTower* preview = buildManager->getPreviewTower();
         if (preview)
         {
             preview->setGridPos(grid);
-            preview->setValid(canPlace);
+            preview->setValid(canPlace && canDetect);
         }
         // 这里返回 false，让 view 也能收到移动信号（不影响功能，比较保险）
         return false;
@@ -369,7 +375,7 @@ bool Game::eventFilter(QObject *watched, QEvent *event)
         // --- 左键：放置 ---
         if (mouseEvent->button() == Qt::LeftButton)
         {
-            if (gMap->placeTower(worldPos))
+            if (gMap->canPlaceTower(grid) && me->isDetectable(grid.x(), grid.y()))
             {
                 // 创建真塔
                 Tower* tower = new Tower(buildManager->getPreviewTower()->getTowerType());
@@ -381,6 +387,7 @@ bool Game::eventFilter(QObject *watched, QEvent *event)
                 connect(tower->getManager(), &BulletManager::bulletCreated, this, [this](Bullet* bullet){
                     scene->addItem(bullet);
                 });
+                gMap->placeTower(worldPos);
                 buildManager->cancelBuild();
             }
             // 返回 true，表示“这事我处理完了”，View 就不要再瞎掺和了

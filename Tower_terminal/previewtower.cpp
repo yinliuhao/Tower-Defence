@@ -9,7 +9,7 @@ PreviewTower::PreviewTower(TowerType type):
     setAcceptedMouseButtons(Qt::NoButton);
     setAcceptHoverEvents(false);
 
-    setZValue(1000);
+    setZValue(PREVIEWTOWERZVALUE);
 
     switch(type)
     {

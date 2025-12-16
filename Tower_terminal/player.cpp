@@ -281,3 +281,13 @@ void Player::initpic()
         rightDigging[i] = leftDigging[i].transformed(QTransform().scale(-1, 1));
     }
 }
+
+bool Player::isDetectable(int gridX, int gridY)
+{
+    QPointF gridCenter = gMap->gridToPixel(gridX, gridY);
+    QPointF playerCenter = getCenterPos();
+    int dx = gridCenter.x() - playerCenter.x();
+    int dy = gridCenter.y() - playerCenter.y();
+    double distance = sqrt(dx * dx + dy * dy);
+    return distance <= detectRange;
+}

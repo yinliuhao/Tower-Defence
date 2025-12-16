@@ -190,5 +190,6 @@
         <file>bullet/mortar_level1.png</file>
         <file>bullet/mortar_level2.png</file>
         <file>bullet/mortar_level3.png</file>
+        <file>tower/explorationMarker.png</file>
     </qresource>
 </RCC>
