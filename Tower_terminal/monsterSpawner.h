@@ -23,10 +23,11 @@ public:
 
    // === 对外调用 ===
     int getCurrentWave() const { return currentWave; }
+    void cleanupMonsters();       // 删除死亡怪物
+
     // 全部怪物（真正保存的容器）
     std::vector<Monster*> monsters;
-    // 网格：先 X 再 Y，下标范围 [0, MAPWIDTH/TILESIZE) × [0, MAPHEIGHT/TILESIZE)
-    std::vector<Monster*> grid[MAPWIDTH / TILESIZE][MAPHEIGHT / TILESIZE];
+    std::vector<Monster*> grid[MAPHEIGHT / TILESIZE][MAPWIDTH / TILESIZE];
 
 signals:
     // 信号：怪物被生成（用于在Game类中添加到场景）
@@ -40,7 +41,6 @@ private slots:
     void updateAllMonstersPosition();     // 每帧调用
     void updateAllAnimationFrame();
     void performAllAttack();
-    void onMonsterDied();
 
 private:
     void initialize();         // 初始化生成器

@@ -148,10 +148,10 @@
         <file>bullet/cannon_level1.png</file>
         <file>bullet/cannon_level2.png</file>
         <file>bullet/cannon_level3.png</file>
-        <file>bullet/mortar_level1_frame2.png</file>
-        <file>bullet/mortar_level1_frame1.png</file>
-        <file>bullet/mortar_level1_frame3.png</file>
-        <file>bullet/mortar_level1_frame4.png</file>
+        <file>bullet/mortal_level1_frame1.png</file>
+        <file>bullet/mortal_level1_frame2.png</file>
+        <file>bullet/mortal_level1_frame3.png</file>
+        <file>bullet/mortal_level1_frame4.png</file>
         <file>bullet/mortar_level2_frame1.png</file>
         <file>bullet/mortar_level2_frame2.png</file>
         <file>bullet/mortar_level2_frame3.png</file>
@@ -187,9 +187,17 @@
         <file>tower/preview_archer.png</file>
         <file>tower/preview_cannon.png</file>
         <file>tower/preview_mortar.png</file>
-        <file>bullet/mortar_level1.png</file>
-        <file>bullet/mortar_level2.png</file>
-        <file>bullet/mortar_level3.png</file>
-        <file>tower/explorationMarker.png</file>
+        <file>slime/(1).png</file>
+        <file>slime/(2).png</file>
+        <file>slime/(3).png</file>
+        <file>slime/(4).png</file>
+        <file>slime/(5).png</file>
+        <file>slime/(6).png</file>
+        <file>slime/(7).png</file>
+        <file>slime/(8).png</file>
+        <file>slime/(9).png</file>
+        <file>slime/(10).png</file>
+        <file>slime/(11).png</file>
+        <file>slime/(12).png</file>
     </qresource>
 </RCC>

@@ -376,7 +376,7 @@ bool Map::canPlaceTower(const QPoint& gridPos) const {
 bool Map::placeTower(const QPointF& pixelPos) {
     QPoint gridPos = pixelToGrid(pixelPos);
     if (isBuildable(gridPos.x(), gridPos.y())) {
-        setTileState(gridPos.x(), gridPos.y(), TILE_ELSE);
+        setTileState(gridPos.x(), gridPos.y(), TILE_BLOCKED);
         return true;
     }
     return false;

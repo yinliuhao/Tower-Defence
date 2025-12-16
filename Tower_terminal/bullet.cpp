@@ -1,40 +1,36 @@
 #include "bullet.h"
 #include <QPainter>
-#include <QGraphicsScene>
+#include <QTimer>
 #include <cmath>
-#include <fstream>
-#include <QDateTime>
-#include <QFile>
-#include <QTextStream>
-#include <QDir>
+#include <QGraphicsScene>
+#include <QDebug>
 #include "utils.h"
-#include "structVector.h"
+#include "tower.h"
 
-Bullet::Bullet(const Vector2& startPos,
-               Monster* target,
-               TowerType towerType,
-               int towerLevel,
-               float speed,
-               float damage,
-               QGraphicsItem* parent)
-    : QObject(nullptr),
-    QGraphicsItem(parent),
+// Bullet.cpp 中的构造函数修改
+Bullet::Bullet(const Vector2& startPos, Monster* target, TowerType towerType,
+               int towerLevel, float speed, float damage, QGraphicsItem* parent)
+    : QObject(nullptr),  // 先初始化 QObject
+    QGraphicsItem(parent),  // 再初始化 QGraphicsItem
     position_(startPos),
     target(target),
     speed_(speed),
     damage_(damage),
+    active_(true),
+    hasHit_(false),
     tolerance_(BULLET_TOLERANCE),
+    rotation_(0),
     towerType_(towerType),
-    towerLevel_(towerLevel)
+    towerLevel_(towerLevel),
+    currentFrame_(0)
 {
-    qDebug() << "[Bullet::Ctor]" << static_cast<void*>(this)
-             << "target:" << static_cast<void*>(target);
+    // 初始化指针为 nullptr
+    updateTimer_ = nullptr;
+    frameTimer_ = nullptr;
 
+    loadDefaultPixmap();
     setPos(QPointF(startPos.x, startPos.y));
     setZValue(BULLETZVALUE);
-
-    loadAnimatedPixmap();
-    loadDefaultPixmap();
 
     updateTimer_ = new QTimer(this);
     connect(updateTimer_, &QTimer::timeout, this, &Bullet::onUpdateTimer);
@@ -44,41 +40,82 @@ Bullet::Bullet(const Vector2& startPos,
     connect(frameTimer_, &QTimer::timeout, this, &Bullet::onFrameUpdate);
     frameTimer_->setInterval(BULLET_FRAME_DELAY);
 
-    if (target) {
-        connect(target, &Monster::died, this, [this](int){
-            qDebug() << "[Bullet] target died"
-                     << "bullet:" << static_cast<void*>(this)
-                     << "old target:" << static_cast<void*>(this->target);
-            this->target = nullptr;
-        });
-    }
+    loadAnimatedPixmap();
+    loadDefaultPixmap();
 }
 
+void Bullet::loadAnimatedPixmap()
+{
+    bulletFrames_.clear();  // 现在使用正确的成员变量
+    if(towerType_ == TowerType::TOWER2)
+    {
+        bulletFrames_.clear();
+        // 加载并处理每一帧图片
+        for(int i = 1; i <= 4; i++)
+        {
+            bulletFrames_.push_back(QPixmap(QString(":/picture/bullet/mortar_level%1_").arg(towerLevel_) +
+                                            QString("/frame%1.png").arg(i)));
+            totalFrames_ = 4;
+        }
+    }
+    else  totalFrames_ = 1;
+}
+void Bullet::loadDefaultPixmap()
+{
+    switch(towerType_) {
+    case TowerType::TOWER1:  // 弓箭塔 - 只有一级，单帧
+        bulletPixmap_ = QPixmap(QString(":/picture/bullet/archer.png"));
+        break;
+
+    case TowerType::TOWER2:  // 加农炮 - 三级，每级三帧动画
+        bulletPixmap_ = QPixmap(QString(":/picture/bullet/cannon_level%1.png").arg(towerLevel_));
+        break;
+
+    case TowerType::TOWER3:  // 迫击炮 - 三级,，每级四帧动画
+        bulletPixmap_ = QPixmap(QString(":/picture/bullet/mortar_level%1_frame1.png").arg(towerLevel_));
+        break;
+
+    default:
+        break;  
+    }
+    pixmapSize_ = bulletPixmap_.size();
+}
 Bullet::~Bullet()
 {
-    // QTimer 作为子对象会自动销毁
+    if (updateTimer_ && updateTimer_->isActive()) {
+        updateTimer_->stop();
+        updateTimer_->deleteLater();
+    }
+    if (frameTimer_ && frameTimer_->isActive()) {
+        frameTimer_->stop();
+        frameTimer_->deleteLater();
+    }
 }
 
 QRectF Bullet::boundingRect() const
 {
-    qreal r = std::sqrt(pixmapSize_.width() * pixmapSize_.width() +
-                        pixmapSize_.height() * pixmapSize_.height());
+    qreal w = pixmapSize_.width();
+    qreal h = pixmapSize_.height();
+    qreal r = std::sqrt(w*w + h*h); // 对角线长度
+
     return QRectF(-r/2, -r/2, r, r);
 }
 
-void Bullet::paint(QPainter* painter,
-                   const QStyleOptionGraphicsItem*,
-                   QWidget*)
+void Bullet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                   QWidget *widget)
 {
-    if (dying_) return;
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
 
     painter->save();
+
+    painter->translate(0, 0);
     painter->rotate(rotation_);
 
     QPointF drawPos(-pixmapSize_.width() / 2,
                     -pixmapSize_.height() / 2);
 
-    if (!bulletFrames_.isEmpty() && currentFrame_ != 0)
+    if (currentFrame_ > 0 && currentFrame_ <= bulletFrames_.size())
         painter->drawPixmap(drawPos, bulletFrames_[currentFrame_ - 1]);
     else
         painter->drawPixmap(drawPos, bulletPixmap_);
@@ -93,181 +130,110 @@ QPainterPath Bullet::shape() const
     return path;
 }
 
+void Bullet::setBulletPixmap(const QPixmap& pixmap)
+{
+    bulletPixmap_ = pixmap;
+    pixmapSize_ = pixmap.size();
+    update();
+}
+
+void Bullet::setBulletPixmap(const QString& imagePath)
+{
+    if (bulletPixmap_.load(imagePath)) {
+        pixmapSize_ = bulletPixmap_.size();
+        update();
+    }
+}
+
 void Bullet::onUpdateTimer()
 {
     updatePosition();
 }
 
+void Bullet::onFrameUpdate()
+{
+    currentFrame_++;
+    if(currentFrame_ > totalFrames_)
+    {
+        frameTimer_->stop();
+        if (scene()) {
+            scene()->removeItem(this);
+        }
+    }
+    if (totalFrames_ >= 1) {
+        update();
+    }
+
+}
+
 void Bullet::updatePosition()
 {
-    qDebug() << "[Bullet::updatePosition]"
-             << static_cast<void*>(this)
-             << "dying:" << dying_
-             << "hasHit:" << hasHit_
-             << "target:" << static_cast<void*>(target);
+    if (!active_ || hasHit_) return;
 
-    // #region agent log
-    /*{
-        try {
-            QDir().mkpath(".cursor");
-            QFile file(".cursor/debug.log");
-            if (file.open(QIODevice::Append | QIODevice::Text)) {
-                QTextStream ts(&file);
-                ts << "{\"sessionId\":\"debug-session\","
-                      "\"runId\":\"pre-fix\","
-                      "\"hypothesisId\":\"H2\","
-                      "\"location\":\"bullet.cpp:96\","
-                      "\"message\":\"Bullet::updatePosition\","
-                      "\"data\":{\"bullet\":\"" << this
-                   << "\",\"target\":\"" << target
-                   << "\",\"dying\":" << (dying_ ? "true" : "false")
-                   << ",\"hasHit\":" << (hasHit_ ? "true" : "false")
-                   << "},"
-                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
-                   << "}\n";
-            }
-        } catch (...) {
-        }
-    }*/
-    // #endregion
-
-    if (dying_ || !target) {
-        //qDebug() << " -> destroySelf";
-        destroySelf();
+    if (!target) {
+        active_ = false;
+        if (updateTimer_) updateTimer_->stop();
+        if (scene()) scene()->removeItem(this);
         return;
     }
 
-    Vector2 targetPos = target->getPosition();
-    Vector2 dir = targetPos - position_;
-    float dist = dir.distanceTo(Vector2(0, 0));
+    Vector2 targetPos_ = target->getPosition();
+    Vector2 direction = targetPos_ - position_;
+    float distance = direction.distanceTo(Vector2(0, 0));
 
-    if (dist > 0.f) {
-        dir = dir.normalized();
-        rotation_ = std::atan2(dir.y, dir.x) * 180 / M_PI;
-        position_ = position_ + dir * speed_;
+    if (distance > 0) {
+        direction = direction.normalized();
+        rotation_ = std::atan2(direction.y, direction.x) * 180 / M_PI;
+        position_ = position_ + direction * speed_;
         setPos(QPointF(position_.x, position_.y));
     }
 
     if (isAtTarget()) {
         hitTarget();
     }
+
+    if (position_.x < 0 || position_.x > MAPWIDTH ||
+        position_.y < 0 || position_.y > MAPHEIGHT) {
+        active_ = false;
+        if (updateTimer_ && updateTimer_->isActive()) {
+            updateTimer_->stop();
+        }
+        if (scene()) {
+            scene()->removeItem(this);
+        }
+    }
 }
 
 bool Bullet::isAtTarget() const
 {
     if (!target) return false;
-    return position_.distanceTo(target->getPosition()) <= tolerance_;
+
+    Vector2 targetPos_ = target->getPosition();
+    float distance = position_.distanceTo(targetPos_);
+    return distance <= tolerance_;
 }
+
 
 void Bullet::hitTarget()
 {
-    //qDebug() << "[Bullet::hitTarget]"
-    //         << static_cast<void*>(this)
-    //         << "target:" << static_cast<void*>(target)
-    //         << "hasHit:" << hasHit_
-    //         << "dying:" << dying_;
-
-    if (hasHit_ || dying_ || !target) return;
-
     hasHit_ = true;
+    active_ = false;
 
-    // #region agent log
-    /*{
-        try {
-            QFile file(".cursor/debug.log");
-            if (file.open(QIODevice::Append | QIODevice::Text)) {
-                QTextStream ts(&file);
-                ts << "{\"sessionId\":\"debug-session\","
-                      "\"runId\":\"pre-fix\","
-                      "\"hypothesisId\":\"H2\","
-                      "\"location\":\"bullet.cpp:133\","
-                      "\"message\":\"Bullet::hitTarget\","
-                      "\"data\":{\"bullet\":\"" << this
-                   << "\",\"target\":\"" << target
-                   << "\",\"damage\":" << damage_
-                   << "},"
-                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
-                   << "}\n";
-            }
-        } catch (...) {
-        }
-    }*/
-    // #endregion
-
-    updateTimer_->stop();
-    if (totalFrames_ > 1) {
-        currentFrame_ = 0;
-        frameTimer_->start();
-    } else {
-        emit hit(damage_);
-        qDebug() << " -> takeDamage";
-        takeDamage();
-    }
-}
-
-void Bullet::onFrameUpdate()
-{
-    if (++currentFrame_ > totalFrames_) {
-        //qDebug() << " -> takeDamage";
-        dying_ = true;
-        takeDamage();
-        return;
-    }
-    update();
-}
-
-void Bullet::destroySelf()
-{
-    qDebug() << "[Bullet::destroySelf]" << static_cast<void*>(this);
-
-    if (dying_) {
-        if (scene()) scene()->removeItem(this);
-        deleteLater();
-    }
-}
-
-void Bullet::loadAnimatedPixmap()
-{
-    bulletFrames_.clear();
-    totalFrames_ = 1;
-
-    if (towerType_ == TowerType::TOWER3) {
-        for (int i = 1; i <= 4; ++i) {
-            bulletFrames_.push_back(
-                QPixmap(QString(":/picture/bullet/mortar_level%1_frame%2.png")
-                            .arg(towerLevel_).arg(i)));
-        }
-        totalFrames_ = bulletFrames_.size();
+    if (updateTimer_ && updateTimer_->isActive()) {
+        updateTimer_->stop();
     }
 
-    if (!bulletFrames_.isEmpty()) {
-        pixmapSize_ = bulletFrames_.first().size();
-    }
-}
-
-void Bullet::loadDefaultPixmap()
-{
-    switch (towerType_) {
-    case TowerType::TOWER1:
-        bulletPixmap_ = QPixmap(":/picture/bullet/archer.png");
-        break;
-    case TowerType::TOWER2:
-        bulletPixmap_ =
-            QPixmap(QString(":/picture/bullet/cannon_level%1.png").arg(towerLevel_));
-        break;
-    case TowerType::TOWER3:
-        bulletPixmap_ =
-            QPixmap(QString(":/picture/bullet/mortar_level%1.png").arg(towerLevel_));
-        break;
-    default:
-        break;
-    }
-    if (!bulletPixmap_.isNull())
-        pixmapSize_ = bulletPixmap_.size();
-}
-
-void Bullet::takeDamage()
-{
+    startEffect();
     target->takeDamage(damage_);
-    destroySelf();
+}
+
+void Bullet::startEffect()
+{
+    if(totalFrames_ > 1)
+        frameTimer_->start();
+    else{
+        if (scene()) {
+            scene()->removeItem(this);
+        }
+    }
 }

@@ -137,32 +137,6 @@
     <string>Tower Defence</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="settingsButton">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>650</y>
-     <width>120</width>
-     <height>60</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>120</width>
-     <height>60</height>
-    </size>
-   </property>
-   <property name="font">
-    <font>
-     <family>Algerian</family>
-     <pointsize>24</pointsize>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="text">
-    <string>Settings</string>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections/>

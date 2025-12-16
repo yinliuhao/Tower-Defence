@@ -35,7 +35,6 @@ public:
     bool getWalkRight() { return walk_right; }
 
     PlayerState getState() { return state; }
-    qreal getRange() { return detectRange; }
 
     void setRollUp(bool on) { roll_up = on; }
     void setRollDown(bool on) { roll_down = on; }
@@ -59,11 +58,8 @@ public:
     bool isCutting() { return state == PlayerState::CUTTING; }
     bool isDigging() { return state == PlayerState::DIGGING; }
 
-    QPointF getCenterPos() { return pos() + QPointF(TILESIZE / 2.0, TILESIZE / 2.0); }
-
     Resource * getTarget() { return target; }
 
-    bool isDetectable(int gridX, int gridY);
 
 protected:
     QRectF boundingRect() const override;
@@ -128,8 +124,6 @@ private:
     PlayerState state = PlayerState::WALKING;
 
     Resource * target = nullptr;
-
-    qreal detectRange = 100.0;
 
 };
 

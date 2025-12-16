@@ -6,4 +6,3 @@ MonsterSpawnerTower* monsterSpawner;//怪物生成器
 Player * me;
 ResourceManager * resourceManager;
 BuildManager * buildManager;
-ExplorationMarker * explorationmarker;

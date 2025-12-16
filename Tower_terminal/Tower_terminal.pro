@@ -13,7 +13,6 @@ SOURCES += \
     buildmanager.cpp \
     bullet.cpp \
     bulletmanager.cpp \
-    explorationmarker.cpp \
     gameWidght.cpp \
     global.cpp \
     main.cpp \
@@ -26,7 +25,6 @@ SOURCES += \
     previewtower.cpp \
     resource.cpp \
     resourcemanager.cpp \
-    settingsWidget.cpp \
     tower.cpp \
     towerButton.cpp \
     utils.cpp \
@@ -36,7 +34,6 @@ HEADERS += \
     buildmanager.h \
     bullet.h \
     bulletmanager.h \
-    explorationmarker.h \
     gameWidght.h \
     global.h \
     map.h \
@@ -48,8 +45,6 @@ HEADERS += \
     previewtower.h \
     resource.h \
     resourcemanager.h \
-    saveConflictWidget.h \
-    settingsWidget.h \
     structVector.h \
     tower.h \
     towerButton.h \
@@ -65,9 +60,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    png.qrc \
     png.qrc
-
-DISTFILES += \
-    tileData.txt \
-    tileState.txt
