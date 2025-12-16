@@ -20,6 +20,7 @@ SOURCES += \
     menuWidget.cpp \
     monster.cpp \
     monsterSpawner.cpp \
+    monstermanager.cpp \
     player.cpp \
     playerUI.cpp \
     previewtower.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     menuWidget.h \
     monster.h \
     monsterSpawner.h \
+    monstermanager.h \
     player.h \
     playerUI.h \
     previewtower.h \
