@@ -21,11 +21,13 @@ SOURCES += \
     menuWidget.cpp \
     monster.cpp \
     monsterSpawner.cpp \
+    monstermanager.cpp \
     player.cpp \
     playerUI.cpp \
     previewtower.cpp \
     resource.cpp \
     resourcemanager.cpp \
+    settingsWidget.cpp \
     tower.cpp \
     towerButton.cpp \
     utils.cpp \
@@ -42,11 +44,14 @@ HEADERS += \
     menuWidget.h \
     monster.h \
     monsterSpawner.h \
+    monstermanager.h \
     player.h \
     playerUI.h \
     previewtower.h \
     resource.h \
     resourcemanager.h \
+    saveConflictWidget.h \
+    settingsWidget.h \
     structVector.h \
     tower.h \
     towerButton.h \
@@ -62,4 +67,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    png.qrc \
     png.qrc
+
+DISTFILES += \
+    tileData.txt \
+    tileState.txt
