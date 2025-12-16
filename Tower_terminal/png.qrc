@@ -187,5 +187,17 @@
         <file>tower/preview_archer.png</file>
         <file>tower/preview_cannon.png</file>
         <file>tower/preview_mortar.png</file>
+        <file>slime/(1).png</file>
+        <file>slime/(2).png</file>
+        <file>slime/(3).png</file>
+        <file>slime/(4).png</file>
+        <file>slime/(5).png</file>
+        <file>slime/(6).png</file>
+        <file>slime/(7).png</file>
+        <file>slime/(8).png</file>
+        <file>slime/(9).png</file>
+        <file>slime/(10).png</file>
+        <file>slime/(11).png</file>
+        <file>slime/(12).png</file>
     </qresource>
 </RCC>
