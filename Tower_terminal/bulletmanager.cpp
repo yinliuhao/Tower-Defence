@@ -73,7 +73,8 @@ void BulletManager::clearAll()
         if (bullet->scene()) {
             bullet->scene()->removeItem(bullet);
         }
-        delete bullet;
+        // 使用 Qt 的事件循环安全删除
+        bullet->deleteLater();
     }
     bullets_.clear();
 }
@@ -82,8 +83,12 @@ void BulletManager::removeBullet(Bullet* bullet)
 {
     auto it = std::find(bullets_.begin(), bullets_.end(), bullet);
     if (it != bullets_.end()) {
-        // 删除对象并从列表中移除
-        delete bullet;
+        // 从场景中移除并断开信号，但交给 Qt 事件循环删除
+        if (bullet->scene()) {
+            bullet->scene()->removeItem(bullet);
+        }
+        QObject::disconnect(bullet, nullptr, this, nullptr);
+        bullet->deleteLater();
         bullets_.erase(it);
 
         qDebug() << "子弹已移除，剩余子弹数量:" << bullets_.size();

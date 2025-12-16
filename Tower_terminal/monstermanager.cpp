@@ -1,5 +1,10 @@
-#include"monstermanager.h"
+#include "monstermanager.h"
 #include <QDebug>
+#include <fstream>
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
 
 
 // 构造函数
@@ -132,6 +137,29 @@ void MonsterManager::handleMonsterDeath()
     Monster* monster = qobject_cast<Monster*>(sender());
     if (monster) {
         qDebug() << "怪物死亡，开始清理";
+
+        // #region agent log
+        {
+            try {
+                QDir().mkpath(".cursor");
+                QFile file(".cursor/debug.log");
+                if (file.open(QIODevice::Append | QIODevice::Text)) {
+                    QTextStream ts(&file);
+                    ts << "{\"sessionId\":\"debug-session\","
+                          "\"runId\":\"pre-fix\","
+                          "\"hypothesisId\":\"H1\","
+                          "\"location\":\"monstermanager.cpp:130\","
+                          "\"message\":\"MonsterManager::handleMonsterDeath\","
+                          "\"data\":{\"ptr\":\"" << monster
+                       << "\"},"
+                          "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                       << "}\n";
+                }
+            } catch (...) {
+            }
+        }
+        // #endregion
+
         m_deadMonsters.append(monster);
         removeMonster(monster);
     }
@@ -158,6 +186,28 @@ void MonsterManager::cleanupDeadMonsters()
 
     for (Monster* monster : m_deadMonsters) {
         if (monster) {
+            // #region agent log
+            {
+                try {
+                    QDir().mkpath(".cursor");
+                    QFile file(".cursor/debug.log");
+                    if (file.open(QIODevice::Append | QIODevice::Text)) {
+                        QTextStream ts(&file);
+                        ts << "{\"sessionId\":\"debug-session\","
+                              "\"runId\":\"pre-fix\","
+                              "\"hypothesisId\":\"H1\","
+                              "\"location\":\"monstermanager.cpp:159\","
+                              "\"message\":\"MonsterManager::cleanupDeadMonsters deleting monster\","
+                              "\"data\":{\"ptr\":\"" << monster
+                           << "\"},"
+                              "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                           << "}\n";
+                    }
+                } catch (...) {
+                }
+            }
+            // #endregion
+
             if (m_scene) {
                 m_scene->removeItem(monster);
             }
@@ -177,6 +227,28 @@ void MonsterManager::cleanupDeadMonsters()
 void MonsterManager::removeMonster(Monster* monster)
 {
     if (!monster) return;
+
+    // #region agent log
+    {
+        try {
+            QDir().mkpath(".cursor");
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H1\","
+                      "\"location\":\"monstermanager.cpp:177\","
+                      "\"message\":\"MonsterManager::removeMonster\","
+                      "\"data\":{\"ptr\":\"" << monster
+                   << "\"},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }
+    // #endregion
 
     int index = m_activeMonsters.indexOf(monster);
     if (index != -1) {

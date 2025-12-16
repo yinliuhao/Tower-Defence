@@ -75,6 +75,13 @@ public slots:  //Qt的内容
     void moveToNextPosition();      // 移动到下一个路径点
 
 protected:
+    // 自定义绘制：死亡/正在死亡的怪物不再绘制，从视觉上彻底“消失”
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget = nullptr) override;
+
+    void markDead();
+
     // 纯虚函数：加载动画帧
     virtual void loadAnimationFrames()=0;
     virtual void loadAttackFrames()=0;
@@ -97,6 +104,7 @@ protected:
     //攻击相关
     float attackDamage;
     bool isAttacking;
+    bool isDying_    = false;
 
     // 动画系统相关
     QVector<QPixmap> animationFrames;  // 移动动画帧图片集合

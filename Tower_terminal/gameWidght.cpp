@@ -114,8 +114,8 @@ Game::Game(QWidget *parent)
         });
 
         // 连接怪物死亡信号
-        connect(monster, &Monster::died, this, [this, monster](int gold) {
-            qDebug() << "怪物死亡，奖励金币：" << gold;
+        connect(monster, &Monster::died, this, [this, monster](int goldReward) {
+            qDebug() << "怪物死亡，奖励金币：" << goldReward;
             // 怪物会自动从场景中移除（在Monster::takeDamage中处理）
         });
 

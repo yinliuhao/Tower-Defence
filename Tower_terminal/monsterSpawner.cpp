@@ -8,6 +8,10 @@
 #include "global.h"
 #include "monster.h"
 #include <QObject>
+#include <QGraphicsScene>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
 
 // 构造函数
 MonsterSpawnerTower::MonsterSpawnerTower(QGraphicsItem* parent)
@@ -129,6 +133,8 @@ void MonsterSpawnerTower::spawnMonster()
         emit monsterSpawned(newMonster);
         monsters.push_back(newMonster);
 
+        connect(newMonster, &Monster::died, this, &MonsterSpawnerTower::onMonsterDied);
+
         addMonsterToGrid(newMonster);
 
         monstersInCurrentWave++;
@@ -143,7 +149,8 @@ void MonsterSpawnerTower::addMonsterToGrid(Monster* m)
     int gx = m_grid.x();
     int gy = m_grid.y();
 
-    if (gx < 0 || gx >= 90 || gy < 0 || gy >= 60) return;
+    // 网格尺寸：X 方向 MAPWIDTH/TILESIZE(=90)，Y 方向 MAPHEIGHT/TILESIZE(=60)
+    if (gx < 0 || gx >= MAPWIDTH / TILESIZE || gy < 0 || gy >= MAPHEIGHT / TILESIZE) return;
 
     grid[gx][gy].push_back(m);
 }
@@ -154,7 +161,7 @@ void MonsterSpawnerTower::removeMonsterFromGrid(Monster* m)
     int gx = m_grid.x();
     int gy = m_grid.y();
 
-    if (gx < 0 || gx >= 60 || gy < 0 || gy >= 90) return;
+    if (gx < 0 || gx >= MAPWIDTH / TILESIZE || gy < 0 || gy >= MAPHEIGHT / TILESIZE) return;
 
     auto& vec = grid[gx][gy];
     vec.erase(std::remove(vec.begin(), vec.end(), m), vec.end());
@@ -205,26 +212,6 @@ void MonsterSpawnerTower::performAllAttack()
     }
 }
 
-
-// ==================== 删除死亡怪物 ====================
-void MonsterSpawnerTower::cleanupMonsters()
-{
-    for (int i = monsters.size() - 1; i >= 0; --i)
-    {
-        Monster* m = monsters[i];
-        if (!m->isDead()) continue;
-
-        removeMonsterFromGrid(m);
-
-        delete m;
-
-        monsters[i] = monsters.back();
-        monsters.pop_back();
-    }
-}
-
-
-
 // ==================== 波次更新 ====================
 void MonsterSpawnerTower::updateWave()
 {
@@ -243,4 +230,44 @@ void MonsterSpawnerTower::updateWave()
     qDebug() << "=== 第" << currentWave << "波开始 ===";
     qDebug() << "怪物总数：" << totalMonstersInWave;
     qDebug() << "生成间隔：" << spawnInterval << "秒";
+}
+
+void MonsterSpawnerTower::onMonsterDied()
+{
+    Monster* deadMonster = qobject_cast<Monster*>(sender());
+    if (!deadMonster) return;
+
+    // #region agent log
+    /*{
+        try {
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H4\","
+                      "\"location\":\"monsterSpawner.cpp:230\","
+                      "\"message\":\"MonsterSpawnerTower::onMonsterDied\","
+                      "\"data\":{\"ptr\":\"" << deadMonster
+                   << "\"},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }*/
+    // #endregion
+
+    // 1. 从网格中移除
+    removeMonsterFromGrid(deadMonster);
+
+    // 2. 从活动怪物列表中移除指针（关键的内存/逻辑清理）
+    auto it = std::remove(monsters.begin(), monsters.end(), deadMonster);
+    monsters.erase(it, monsters.end());
+
+    // 3. 从场景中移除并交给 Qt 延迟销毁
+    if (deadMonster->scene()) {
+        deadMonster->scene()->removeItem(deadMonster);
+    }
+    deadMonster->deleteLater();
 }

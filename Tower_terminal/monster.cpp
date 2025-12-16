@@ -5,8 +5,13 @@
 #include "global.h"
 #include <vector>
 #include "utils.h"
-#include<cmath>
-#include"monsterSpawner.h"
+#include <cmath>
+#include "monsterSpawner.h"
+#include <fstream>
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
 
 using namespace std;
 
@@ -22,6 +27,30 @@ Monster::Monster(MonsterType type,
     currentFrameIndex(0),            // 动画帧索引从0开始
     isAttackAnimation(false)
 {
+    //qDebug() << "[Monster::Ctor]" << static_cast<void*>(this);
+
+    // #region agent log
+    {
+        try {
+            QDir().mkpath(".cursor");
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H3\","
+                      "\"location\":\"monster.cpp:23\","
+                      "\"message\":\"Monster ctor\","
+                      "\"data\":{\"ptr\":\"" << this
+                   << "\"},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }
+    // #endregion
+
     switch(type)
     {
     case MonsterType::MONSTER1:
@@ -79,32 +108,138 @@ void Monster::initializeMonster()
 // 怪物析构函数
 Monster::~Monster()
 {
-    stopAttack();
+    qDebug() << "~Monster" << static_cast<void*>(this);
+
+    // #region agent log
+    /*{
+        try {
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H3\","
+                      "\"location\":\"monster.cpp:82\","
+                      "\"message\":\"Monster dtor\","
+                      "\"data\":{\"ptr\":\"" << this
+                   << "\"},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }*/
+    // #endregion
+}
+
+// 自定义绘制：死亡/正在死亡的怪物不再绘制
+void Monster::paint(QPainter* painter,
+                    const QStyleOptionGraphicsItem* option,
+                    QWidget* widget)
+{
+    if (isDying_ || isDead()) {
+        return;
+    }
+    QGraphicsPixmapItem::paint(painter, option, widget);
 }
 
 // 怪物受到伤害处理（之后来联系子弹）
 void Monster::takeDamage(float damage)
 {
-    monsterHealth -= damage;  // 扣除伤害值
+    qDebug() << "[Monster::takeDamage]"
+             << static_cast<void*>(this)
+             << "hp(before):" << monsterHealth
+             << "damage:" << damage
+             << "isDead:" << isDead()
+             << "isDying:" << isDying_;
 
-    // 检查生命值是否归零
-    if (isDead()) {
-        currentState = MonsterState::DEAD;
-        emit died(monsterGold);  // 发射死亡信号，传递金币奖励
-
-        // 从场景中移除并安全删除
-        if (scene()) {
-            scene()->removeItem(this);
+    // #region agent log
+    /*{
+        try {
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H1\","
+                      "\"location\":\"monster.cpp:88\","
+                      "\"message\":\"Monster::takeDamage entry\","
+                      "\"data\":{\"ptr\":\"" << this
+                   << "\",\"hpBefore\":" << monsterHealth
+                   << ",\"damage\":" << damage
+                   << ",\"isDying\":" << (isDying_ ? "true" : "false")
+                   << "},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
         }
-        deleteLater();  // 安全延迟删除
-        return;
+    }*/
+    // #endregion
+
+    if (isDying_) return;
+    if (isDead()) return;
+
+    monsterHealth -= damage;
+
+    if (monsterHealth <= 0) {
+        qDebug() << " -> markDead";
+        markDead();
     }
+}
+
+void Monster::markDead()
+{
+    qDebug() << "[Monster::markDead]"
+             << static_cast<void*>(this)
+             << "isDying:" << isDying_;
+
+    // #region agent log
+    /*{
+        try {
+            QFile file("d:/DeskTop/Tower_Defence/Tower-Defence/Tower_terminal/.cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"pre-fix\","
+                      "\"hypothesisId\":\"H1\","
+                      "\"location\":\"monster.cpp:108\","
+                      "\"message\":\"Monster::markDead called\","
+                      "\"data\":{\"ptr\":\"" << this
+                   << "\",\"isDying\":" << (isDying_ ? "true" : "false")
+                   << ",\"health\":" << monsterHealth
+                   << "},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }*/
+    // #endregion
+
+    if (isDying_) return;
+    if (isDead()) return;
+
+    isDying_ = true;
+    currentState = MonsterState::DEAD;
+
+    // 死亡后直接隐藏图像，避免在场景中继续显示“尸体”
+    setVisible(false);
+
+    if (isAttacking) {
+        stopAttack();
+    }
+
+    qDebug() << " emit died";
+    emit died(monsterGold);
+    // 注意：真正的删除和从场景移除统一由 MonsterSpawnerTower::onMonsterDied 负责
 }
 
 // 更新动画帧
 void Monster::updateAnimationFrame()
 {
 
+    if (isDying_) return;
     if (isDead()) return;
 
     // 根据当前状态选择动画帧集合
@@ -133,16 +268,14 @@ void Monster::updateAnimationFrame()
 // 移动到下一个路径点
 void Monster::moveToNextPosition()
 {
-    if(isDead()){
-        // 从场景中移除
-        if (scene()) {
-            scene()->removeItem(this);
-        }
-        deleteLater();  // 安全删除
-    }
-    if(currentState==MonsterState::ATTACKING){
+    qDebug() << "[Monster::move]"
+             << static_cast<void*>(this)
+             << "state:" << int(currentState)
+             << "isDead:" << isDead();
+
+    if (isDead() || currentState == MonsterState::ATTACKING)
         return;
-    }
+
     // 终止条件检查：已到达终点、已死亡或超出路径范围
     if(reachedEnd || currentTargetIndex >= (int)path.size()) {
         reachedEnd = true;
@@ -417,5 +550,5 @@ void Monster3::loadAttackFrames(){
             attackFrames.append(frame);
         }
     }
-
 }
+

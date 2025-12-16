@@ -12,7 +12,10 @@
 #include <QPainter>
 #include <QRectF>
 #include <QColor>
-#include<QPointF>
+#include <QPointF>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
 #include "utils.h"
 #include "bulletmanager.h"
 
@@ -31,7 +34,7 @@ Tower::Tower(TowerType type)
       buildCost =  TOWER1_BUILCOST;
       attackRange = TOWER1_ATTACKRANGE;
       attackInterval =  TOWER1_ATTACKINTERVAL;
-      bulletDamage = 10;  // 添加初始化
+      bulletDamage = 50;  // 添加初始化
       bulletSpeed = 8;    // 添加初始化
       totalFrame = 4;
       break;
@@ -50,7 +53,7 @@ Tower::Tower(TowerType type)
         attackRange = TOWER3_ATTACKRANGE;
         attackInterval =  TOWER3_ATTACKINTERVAL;
         bulletDamage = 20;  // 添加初始化
-        bulletSpeed = 1;   // 添加初始化
+        bulletSpeed = 4;   // 添加初始化
         totalFrame = 1;
         break;
     default:
@@ -289,7 +292,11 @@ Monster* Tower::selectAttackTarget()
                 const std::vector<Monster*> &cell = monsterSpawner->grid[x][y];  // 你存的怪物列表
 
                 for (Monster* m : cell) {
-                    if (!m || m->getMonsterState() == MonsterState::DEAD) continue;
+                    if (!m) continue;
+                    // 只选择仍在场景中、仍存活且处于移动状态的怪物
+                    if (!m->scene()) continue;
+                    if (m->isDead()) continue;
+                    if (m->getMonsterState() != MonsterState::MOVING) continue;
 
                     double dx = m->x() - tx;
                     double dy = m->y() - ty;
@@ -312,7 +319,10 @@ Monster* Tower::selectAttackTarget()
                 const std::vector<Monster*> &cell = monsterSpawner->grid[x][y];  // 你存的怪物列表
 
                 for (Monster* m : cell) {
-                    if (!m || m->getMonsterState() == MonsterState::DEAD) continue;
+                    if (!m) continue;
+                    if (!m->scene()) continue;
+                    if (m->isDead()) continue;
+                    if (m->getMonsterState() != MonsterState::MOVING) continue;
 
                     double dx = m->x() - tx;
                     double dy = m->y() - ty;
@@ -326,6 +336,32 @@ Monster* Tower::selectAttackTarget()
             }
         }
     }
+
+    // #region agent log
+    /*if (best) {
+        try {
+            QFile file(".cursor/debug.log");
+            if (file.open(QIODevice::Append | QIODevice::Text)) {
+                QTextStream ts(&file);
+                ts << "{\"sessionId\":\"debug-session\","
+                      "\"runId\":\"post-fix\","
+                      "\"hypothesisId\":\"H5\","
+                      "\"location\":\"tower.cpp:264\","
+                      "\"message\":\"Tower::selectAttackTarget choose\","
+                      "\"data\":{\"tower\":\"" << this
+                   << "\",\"target\":\"" << best
+                   << "\",\"hp\":" << best->getHealth()
+                   << ",\"state\":" << int(best->getMonsterState())
+                   << ",\"hasScene\":" << (best->scene() ? "true" : "false")
+                   << "},"
+                      "\"timestamp\":" << static_cast<long long>(QDateTime::currentMSecsSinceEpoch())
+                   << "}\n";
+            }
+        } catch (...) {
+        }
+    }*/
+    // #endregion
+
     return best;
 }
 
