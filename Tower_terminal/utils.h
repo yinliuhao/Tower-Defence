@@ -63,7 +63,7 @@
 #define MONSTER_ATTACK_INTERVAL 2500
 //monster1
 #define MONSTER1_HEALTH 100.0
-#define MONSTER1_SPEED 200.0
+#define MONSTER1_SPEED 60.0
 #define MONSTER1_GOLD 10
 #define MONSTER1_DAMAGE 1
 //monster2
@@ -81,7 +81,11 @@
 #define MONSTER4_SPEED 20.0
 #define MONSTER4_GOLD 40
 #define MONSTER4_DAMAGE 3
-
+//bat
+#define BAT_HEALTH 400.0
+#define BAT_SPEED 50.0
+#define BAT_GOLD 40
+#define BAT_DAMAGE 3
 //怪物管理器
 #define SPAWNINTERVAL 3.0
 #define WAVEINTERVAL 30.0

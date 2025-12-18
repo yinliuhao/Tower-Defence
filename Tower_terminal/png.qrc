@@ -199,5 +199,29 @@
         <file>slime/(10).png</file>
         <file>slime/(11).png</file>
         <file>slime/(12).png</file>
+        <file>bat/(1).png</file>
+        <file>bat/(2).png</file>
+        <file>bat/(3).png</file>
+        <file>bat/(4).png</file>
+        <file>bat/(5).png</file>
+        <file>bat/(6).png</file>
+        <file>bat/(7).png</file>
+        <file>bat/(8).png</file>
+        <file>bat/(9).png</file>
+        <file>bat/(10).png</file>
+        <file>bat/(11).png</file>
+        <file>bat/(12).png</file>
+        <file>bat/(13).png</file>
+        <file>bat/(14).png</file>
+        <file>bat/(15).png</file>
+        <file>bat/(16).png</file>
+        <file>bat/(17).png</file>
+        <file>bat/(18).png</file>
+        <file>bat/(19).png</file>
+        <file>bat/(20).png</file>
+        <file>bat/(21).png</file>
+        <file>bat/(22).png</file>
+        <file>bat/(23).png</file>
+        <file>bat/(24).png</file>
     </qresource>
 </RCC>
