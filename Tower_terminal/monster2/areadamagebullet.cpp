@@ -41,33 +41,17 @@ QVector<Monster*> AreaDamageBullet::findMonstersInArea(const Vector2& center, fl
 {
     QVector<Monster*> result;
     if (!monsterSpawner) return result;
-
-    QPoint gridPos = gMap->pixelToGrid(QPointF(center.x, center.y));
-    int centerGridX = gridPos.x();
-    int centerGridY = gridPos.y();
-
-    int gridRadius = static_cast<int>(radius / TILESIZE) + 1;
-
-    for (int dx = -gridRadius; dx <= gridRadius; ++dx) {
-        for (int dy = -gridRadius; dy <= gridRadius; ++dy) {
-            int searchGridX = centerGridX + dx;
-            int searchGridY = centerGridY + dy;
-
-            if (searchGridX >= 0 && searchGridX < MAPHEIGHT / TILESIZE &&
-                searchGridY >= 0 && searchGridY < MAPWIDTH / TILESIZE) {
-
-                const auto& monstersInCell = monsterSpawner->grid[searchGridX][searchGridY];
-                for (Monster* monster : monstersInCell) {
-                    if (monster && !monster->isDead()) {
-                        Vector2 monsterPos = monster->getPosition();
-                        float distance = center.distanceTo(monsterPos);
-                        if (distance <= radius) {
-                            result.append(monster);
-                        }
-                    }
-                }
-            }
-        }
+    // Avoid accessing grid directly (may contain stale pointers). Scan the monsters list.
+    int gridRadius = static_cast<int>(radius / TILESIZE) + 1; (void)gridRadius;
+    std::vector<Monster*> all = monsterSpawner->monsters;
+    for (Monster* monster : all) {
+        if (!monster) continue;
+        QPointer<Monster> safeM(monster);
+        if (!safeM) continue;
+        if (safeM->isDead() || safeM->isDying()) continue;
+        Vector2 monsterPos = safeM->getPosition();
+        float distance = center.distanceTo(monsterPos);
+        if (distance <= radius) result.append(safeM);
     }
 
     return result;
